@@ -624,7 +624,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     file_send = await client.send_cached_media(
                         chat_id=FILE_CHANNEL,
                         file_id=file_id,
-                        caption=script.CHANNEL_CAP.format(query.from_user.mention, title, countdown_min, countdown_sec, countdown_total_min, query.message.chat.title),
+                        caption=script.CHANNEL_CAP.format(query.from_user.mention, title, query.message.chat.title),
                         protect_content=True if ident == "filep" else False,
                         reply_markup=InlineKeyboardMarkup(
                             [
@@ -639,22 +639,20 @@ async def cb_handler(client: Client, query: CallbackQuery):
                             ]
                         )
                     )
-        
                     Joel_tgx = await query.message.reply_text(
                         script.FILE_MSG.format(query.from_user.mention, title, size),
-                        parse_mode="html",
+                        parse_mode=enums.ParseMode.HTML,
                         reply_markup=InlineKeyboardMarkup(
                             [
                                 [
-                                    InlineKeyboardButton('📥 𝖣𝗈𝗐𝗇𝗅𝗈𝖺𝖣 𝖫𝗂𝗇𝗄 📥 ', url=file_send.link)
-                                ],
+                                    InlineKeyboardButton('📥 𝖣𝗈𝗐𝗇𝗅𝗈𝖺𝖽 𝖫𝗂𝗇𝗄 📥 ', url=file_send.link)
+                                ], 
                                 [
-                                    InlineKeyboardButton("⚠️ 𝖢𝖺𝗇'𝗍 𝖠𝖼𝖼𝖾𝗌𝗌 ❓ 𝖢𝗅𝗂𝖼𝗄 𝖧𝖾𝗋𝖾 ⚠️", url=FILE_FORWARD)
+                                    InlineKeyboardButton("⚠️ 𝖢𝖺𝗇'𝗍 𝖠𝖼𝖼𝖾𝗌𝗌 ❓ 𝖢𝗅𝗂𝖼𝗄 𝖧𝖾𝗋𝖾 ⚠️", url=(FILE_FORWARD))
                                 ]
                             ]
                         )
                     )
-        
                     if settings['auto_delete']:
                         await asyncio.sleep(600)
                         await Joel_tgx.delete()
@@ -667,22 +665,18 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
         except Exception as e:
             await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
-            
     elif query.data.startswith("checksub"):
         if AUTH_CHANNEL and not await is_subscribed(client, query):
             await query.answer("Join our backup channel, mahnn! 😒", show_alert=True)
             return
-        
-        ident, file_id = query.data.split("#")
+        ident, file_id = query.data.split("#")        
         files_ = await get_file_details(file_id)
-        
         if not files_:
             return await query.answer('No such file exists.')
         files = files_[0]
         title = files.file_name
         size = get_size(files.file_size)
         f_caption = files.caption
-        
         if CUSTOM_FILE_CAPTION:
             try:
                 f_caption = CUSTOM_FILE_CAPTION.format(file_name='' if title is None else title,
@@ -691,15 +685,13 @@ async def cb_handler(client: Client, query: CallbackQuery):
             except Exception as e:
                 logger.exception(e)
                 f_caption = f_caption
-                
         if f_caption is None:
             f_caption = f"{title}"
-        
         await query.answer()
         file_send = await client.send_cached_media(
             chat_id=FILE_CHANNEL,
             file_id=file_id,
-            caption=script.CHANNEL_CAP.format(query.from_user.mention, title, countdown_min, countdown_sec, countdown_total_min, query.message.chat.title),
+            caption=script.CHANNEL_CAP.format(query.from_user.mention, title, query.message.chat.title),
             protect_content=True if ident == 'checksubp' else False,
             reply_markup=InlineKeyboardMarkup(
                 [
@@ -709,12 +701,11 @@ async def cb_handler(client: Client, query: CallbackQuery):
                         InlineKeyboardButton("⚠️ తెలుగు", callback_data="tel")
                     ],
                     [
-                        InlineKeyboardButton("🔥 𝚄𝙿𝙳𝙰𝚃𝙴 𝙲𝙷𝙰𝙽𝙽𝙴𝙻 🔥", url=MAIN_CHANNEL)
-                    ],
+                        InlineKeyboardButton("🔥 𝚄𝙿𝙳𝙰𝚃𝙴 𝙲𝙷𝙰𝙽𝙽𝙴𝙻 🔥", url=(MAIN_CHANNEL))
+                    ], 
                 ]
             )
         )
-        
         if settings['auto_delete']:
             await asyncio.sleep(600)
             await file_send.delete()
