@@ -26,7 +26,8 @@ from info import(
     PROTECT_CONTENT, 
     MSG_ALRT, 
     MAIN_CHANNEL,
-    AUTO_FFILTER
+    AUTO_FFILTER,
+    MAX_BTN
 )
 from utils import get_settings, get_size, is_subscribed, save_group_settings, temp
 
@@ -993,7 +994,7 @@ async def settings(client, message):
             ],
             [
                 InlineKeyboardButton('Max Buttons', callback_data=f'setgs#max_btn#{settings["max_btn"]}#{str(grp_id)}'),
-                InlineKeyboardButton('🔟 10' if settings["max_btn"] else f'{MAX_B_TN}', callback_data=f'setgs#max_btn#{settings["max_btn"]}#{str(grp_id)}')
+                InlineKeyboardButton('🔟 10' if settings["max_btn"] else f'{MAX_BTN}', callback_data=f'setgs#max_btn#{settings["max_btn"]}#{str(grp_id)}')
             ],
             [
                 InlineKeyboardButton('ShortLink', callback_data=f'setgs#is_shortlink#{settings["is_shortlink"]}#{str(grp_id)}'),
