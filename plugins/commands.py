@@ -25,7 +25,8 @@ from info import(
     CUSTOM_FILE_CAPTION, 
     PROTECT_CONTENT, 
     MSG_ALRT, 
-    MAIN_CHANNEL
+    MAIN_CHANNEL,
+    AUTO_FFILTER
 )
 from utils import get_settings, get_size, is_subscribed, save_group_settings, temp
 
@@ -949,13 +950,6 @@ async def settings(client, message):
             settings = await get_settings(grp_id)
     except KeyError:
         await save_group_settings(grp_id, 'max_btn', False)
-        settings = await get_settings(grp_id)
-        
-    try:
-        if settings['auto_ffilter']:
-            await auto_filter(client, message)
-    except KeyError:
-        await save_group_settings(grp_id, 'auto_ffilter', False)
         settings = await get_settings(grp_id)
 
     if 'is_shortlink' not in settings.keys():
