@@ -621,10 +621,10 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     await query.answer(f"Hᴇʏ {query.from_user.first_name}, Tʜɪs Is Nᴏᴛ Yᴏᴜʀ Mᴏᴠɪᴇ Rᴇǫᴜᴇsᴛ. Rᴇǫᴜᴇsᴛ Yᴏᴜʀ's !", show_alert=True)
             else:
                 if clicked == typed:
-                    file_send = await app.send_cached_media(
+                    file_send = await client.send_cached_media(
                         chat_id=FILE_CHANNEL,
                         file_id=file_id,
-                        caption=script.CHANNEL_CAP.format(query.from_user.mention, title, "10", "00", "000000000", 10, query.message.chat.title),
+                        caption=script.CHANNEL_CAP.format(query.from_user.mention, title, countdown_min, countdown_sec, countdown_total_min, query.message.chat.title),
                         protect_content=True if ident == "filep" else False,
                         reply_markup=InlineKeyboardMarkup(
                             [
@@ -634,8 +634,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
                                     InlineKeyboardButton("⚠️ తెలుగు", callback_data="tel")
                                 ],
                                 [
-                                    InlineKeyboardButton("🔥 𝚄𝙿𝙳𝙰𝚃𝙴 𝙲𝙷𝙰𝙽𝙽𝙴𝙻 🔥", url=MAIN_CHANNEL)
-                                ],
+                                    InlineKeyboardButton("🔥 𝚄𝙿𝙳𝙰𝚃𝙴 𝙲𝙷𝙰𝙽𝙽𝙴𝙻 🔥", url=(MAIN_CHANNEL))
+                                ], 
                             ]
                         )
                     )
@@ -699,7 +699,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         file_send = await client.send_cached_media(
             chat_id=FILE_CHANNEL,
             file_id=file_id,
-            caption=script.CHANNEL_CAP.format(query.from_user.mention, title, "10", "00", "000000000", 10, query.message.chat.title),
+            caption=script.CHANNEL_CAP.format(query.from_user.mention, title, countdown_min, countdown_sec, countdown_total_min, query.message.chat.title),
             protect_content=True if ident == 'checksubp' else False,
             reply_markup=InlineKeyboardMarkup(
                 [
