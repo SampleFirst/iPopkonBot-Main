@@ -621,10 +621,10 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     await query.answer(f"Hᴇʏ {query.from_user.first_name}, Tʜɪs Is Nᴏᴛ Yᴏᴜʀ Mᴏᴠɪᴇ Rᴇǫᴜᴇsᴛ. Rᴇǫᴜᴇsᴛ Yᴏᴜʀ's !", show_alert=True)
             else:
                 if clicked == typed:
-                    file_send = await client.send_cached_media(
+                    file_send = await app.send_cached_media(
                         chat_id=FILE_CHANNEL,
                         file_id=file_id,
-                        caption=script.CHANNEL_CAP.format(query.from_user.mention, title, query.message.chat.title),
+                        caption=script.CHANNEL_CAP.format(query.from_user.mention, title, "10", "00", "000000000", 10, query.message.chat.title),
                         protect_content=True if ident == "filep" else False,
                         reply_markup=InlineKeyboardMarkup(
                             [
@@ -634,26 +634,27 @@ async def cb_handler(client: Client, query: CallbackQuery):
                                     InlineKeyboardButton("⚠️ తెలుగు", callback_data="tel")
                                 ],
                                 [
-                                    InlineKeyboardButton("🔥 𝚄𝙿𝙳𝙰𝚃𝙴 𝙲𝙷𝙰𝙽𝙽𝙴𝙻 🔥", url=(MAIN_CHANNEL))
-                                ], 
+                                    InlineKeyboardButton("🔥 𝚄𝙿𝙳𝙰𝚃𝙴 𝙲𝙷𝙰𝙽𝙽𝙴𝙻 🔥", url=MAIN_CHANNEL)
+                                ],
                             ]
                         )
                     )
+        
                     Joel_tgx = await query.message.reply_text(
                         script.FILE_MSG.format(query.from_user.mention, title, size),
-                        parse_mode=enums.ParseMode.HTML,
+                        parse_mode="html",
                         reply_markup=InlineKeyboardMarkup(
                             [
                                 [
-                                    InlineKeyboardButton('📥 𝖣𝗈𝗐𝗇𝗅𝗈𝖺𝖽 𝖫𝗂𝗇𝗄 📥 ', url=file_send.link)
-                                ], 
+                                    InlineKeyboardButton('📥 𝖣𝗈𝗐𝗇𝗅𝗈𝖺𝖣 𝖫𝗂𝗇𝗄 📥 ', url=file_send.link)
+                                ],
                                 [
-                                    InlineKeyboardButton("⚠️ 𝖢𝖺𝗇'𝗍 𝖠𝖼𝖼𝖾𝗌𝗌 ❓ 𝖢𝗅𝗂𝖼𝗄 𝖧𝖾𝗋𝖾 ⚠️", url=(FILE_FORWARD))
+                                    InlineKeyboardButton("⚠️ 𝖢𝖺𝗇'𝗍 𝖠𝖼𝖼𝖾𝗌𝗌 ❓ 𝖢𝗅𝗂𝖼𝗄 𝖧𝖾𝗋𝖾 ⚠️", url=FILE_FORWARD)
                                 ]
                             ]
                         )
                     )
-                    
+        
                     if settings['auto_delete']:
                         await asyncio.sleep(600)
                         await Joel_tgx.delete()
@@ -698,7 +699,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         file_send = await client.send_cached_media(
             chat_id=FILE_CHANNEL,
             file_id=file_id,
-            caption=script.CHANNEL_CAP.format(query.from_user.mention, title, query.message.chat.title),
+            caption=script.CHANNEL_CAP.format(query.from_user.mention, title, "10", "00", "000000000", 10, query.message.chat.title),
             protect_content=True if ident == 'checksubp' else False,
             reply_markup=InlineKeyboardMarkup(
                 [
@@ -708,8 +709,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
                         InlineKeyboardButton("⚠️ తెలుగు", callback_data="tel")
                     ],
                     [
-                        InlineKeyboardButton("🔥 𝚄𝙿𝙳𝙰𝚃𝙴 𝙲𝙷𝙰𝙽𝙽𝙴𝙻 🔥", url=(MAIN_CHANNEL))
-                    ], 
+                        InlineKeyboardButton("🔥 𝚄𝙿𝙳𝙰𝚃𝙴 𝙲𝙷𝙰𝙽𝙽𝙴𝙻 🔥", url=MAIN_CHANNEL)
+                    ],
                 ]
             )
         )
