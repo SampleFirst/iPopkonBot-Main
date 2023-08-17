@@ -38,7 +38,6 @@ from info import (
     IMDB_TEMPLATE, 
     SPELL_IMG, 
     MSG_ALRT,
-    AUTO_FFILTER,
     FILE_FORWARD, 
     MAIN_CHANNEL, 
     LOG_CHANNEL_PM,
