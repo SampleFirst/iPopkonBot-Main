@@ -382,7 +382,7 @@ async def advantage_spoll_choker(bot, query):
                     ]
                 )
             )
-            await asyncio.sleep(10)
+            await asyncio.sleep(30)
             await k.delete()
 
 @Client.on_callback_query()
@@ -2225,7 +2225,7 @@ async def advantage_spell_chok(client, msg):
             RQST = query.strip()
             query = query.strip() + " movie"
             search = query
-            requested_movie = search.strip() 
+            requested_movie = search.strip()
             try:
                 movies = await get_poster(mv_rqst, bulk=True)
             except Exception as e:
@@ -2249,9 +2249,9 @@ async def advantage_spell_chok(client, msg):
                         ]
                     )
                 )
-                
+
                 k = await msg.reply(
-                text=(script.I_CUDNT.format(reqstr.mention)),
+                    text=(script.I_CUDNT.format(reqstr.mention)),
                     reply_markup=InlineKeyboardMarkup(
                         [
                             [
@@ -2261,9 +2261,10 @@ async def advantage_spell_chok(client, msg):
                         ]
                     )
                 )
-                await asyncio.sleep(10)
+                await asyncio.sleep(30)
                 await k.delete()
                 return
+
     movielist = []
     if not movies:
         reqst_gle = mv_rqst.replace(" ", "+")
@@ -2291,14 +2292,16 @@ async def advantage_spell_chok(client, msg):
                 ]
             )
         )
+
         k = await msg.reply_photo(
-        photo=SPELL_IMG, 
-        caption=script.I_CUDNT.format(mv_rqst),
-        reply_markup=InlineKeyboardMarkup(button)
-    )
-    await asyncio.sleep(30)
-    await k.delete()
-    return
+            photo=SPELL_IMG,
+            caption=script.I_CUDNT.format(mv_rqst),
+            reply_markup=InlineKeyboardMarkup(button)
+        )
+        await asyncio.sleep(30)
+        await k.delete()
+        return
+
     movielist += [movie.get('title') for movie in movies]
     movielist += [f"{movie.get('title')} {movie.get('year')}" for movie in movies]
     SPELL_CHECK[mv_id] = movielist
@@ -2316,20 +2319,20 @@ async def advantage_spell_chok(client, msg):
         photo=(SPELL_IMG),
         caption=(script.CUDNT_FND.format(reqstr.mention)),
         reply_markup=InlineKeyboardMarkup(btn)
-        )
+    )
 
     try:
         if settings['auto_delete']:
             await asyncio.sleep(600)
             await spell_check_del.delete()
     except KeyError:
-            grpid = await active_connection(str(message.from_user.id))
-            await save_group_settings(grpid, 'auto_delete', True)
-            settings = await get_settings(message.chat.id)
-            if settings['auto_delete']:
-                await asyncio.sleep(600)
-                await spell_check_del.delete()
-
+        grpid = await active_connection(str(message.from_user.id))
+        await save_group_settings(grpid, 'auto_delete', True)
+        settings = await get_settings(message.chat.id)
+        if settings['auto_delete']:
+            await asyncio.sleep(600)
+            await spell_check_del.delete()
+            
 async def manual_filters(client, message, text=False):
     settings = await get_settings(message.chat.id)
     group_id = message.chat.id
