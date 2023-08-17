@@ -131,8 +131,8 @@ async def give_filter(client, message):
         else:
             await auto_filter(client, message)
             
-    k = await manual_filters(client, message)
-    if k == False:
+    manual = await manual_filters(client, message)
+    if not manual:
         settings = await get_settings(message.chat.id)
         try:
             if settings['auto_ffilter']:
