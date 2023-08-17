@@ -145,6 +145,9 @@ class Database:
     async def get_all_chats(self):
         return self.grp.find({})
 
+    async def delete_chat(self, chat_id):
+        await self.grp.delete_many({'id': int(chat_id)})
+
 
     async def get_db_size(self):
         return (await self.db.command("dbstats"))['dataSize']
