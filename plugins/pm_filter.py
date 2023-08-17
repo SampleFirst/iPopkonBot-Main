@@ -389,8 +389,10 @@ async def advantage_spoll_choker(bot, query):
 async def cb_handler(client: Client, query: CallbackQuery):
     is_admin = query.from_user.id in ADMINS
     data = query.data
+    
     if query.data == "close_data":
         await query.message.delete()
+        
     elif query.data == "delallconfirm":
         userid = query.from_user.id
         chat_type = query.message.chat.type
@@ -424,6 +426,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await del_all(query.message, grp_id, title)
         else:
             await query.answer("You need to be Group Owner or an Auth User to do that!", show_alert=True)
+            
     elif query.data == "delallcancel":
         userid = query.from_user.id
         chat_type = query.message.chat.type
@@ -443,6 +446,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     pass
             else:
                 await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
+                
     elif "groupcb" in query.data:
         await query.answer()
 
@@ -472,6 +476,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             parse_mode=enums.ParseMode.MARKDOWN
         )
         return await query.answer(MSG_ALRT)
+        
     elif "connectcb" in query.data:
         await query.answer()
 
@@ -491,6 +496,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         else:
             await query.message.edit_text('Some error occurred!!', parse_mode=enums.ParseMode.MARKDOWN)
         return await query.answer(MSG_ALRT)
+        
     elif "disconnect" in query.data:
         await query.answer()
 
@@ -513,6 +519,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 parse_mode=enums.ParseMode.MARKDOWN
             )
         return await query.answer(MSG_ALRT)
+        
     elif query.data == "backcb":
         await query.answer()
     
@@ -545,6 +552,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 "Your connected group details ;\n\n",
                 reply_markup=InlineKeyboardMarkup(buttons)
             )
+            
     elif "gfilteralert" in query.data:
         grp_id = query.message.chat.id
         i = query.data.split(":")[1]
@@ -555,6 +563,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             alert = alerts[int(i)]
             alert = alert.replace("\\n", "\n").replace("\\t", "\t")
             await query.answer(alert, show_alert=True)
+            
     elif "alertmessage" in query.data:
         grp_id = query.message.chat.id
         i = query.data.split(":")[1]
@@ -565,13 +574,16 @@ async def cb_handler(client: Client, query: CallbackQuery):
             alert = alerts[int(i)]
             alert = alert.replace("\\n", "\n").replace("\\t", "\t")
             await query.answer(alert, show_alert=True)
+            
     if query.data.startswith("file"):
         ident, file_id = query.data.split("#")
-        clicked = query.from_user.id  # fetching the ID of the user who clicked the button
+        clicked = query.from_user.id
+        
         try:
-            typed = query.message.reply_to_message.from_user.id  # fetching user ID of the user who sent the movie request
+            typed = query.message.reply_to_message.from_user.id
         except:
-            typed = clicked  # if failed, uses the clicked user's ID as requested user ID
+            typed = clicked
+        
         files_ = await get_file_details(file_id)
         if not files_:
             return await query.answer('No such file exist.')
@@ -580,6 +592,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         size = get_size(files.file_size)
         f_caption = files.caption
         settings = await get_settings(query.message.chat.id)
+        
         if CUSTOM_FILE_CAPTION:
             try:
                 f_caption = CUSTOM_FILE_CAPTION.format(file_name='' if title is None else title,
@@ -588,9 +601,10 @@ async def cb_handler(client: Client, query: CallbackQuery):
             except Exception as e:
                 logger.exception(e)
             f_caption = f_caption
+            
         if f_caption is None:
             f_caption = f"{files.file_name}"
-    
+        
         try:
             if AUTH_CHANNEL and not await is_subscribed(client, query):
                 if clicked == typed:
@@ -638,6 +652,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                             ]
                         )
                     )
+                    
                     if settings['auto_delete']:
                         await asyncio.sleep(600)
                         await Joel_tgx.delete()
@@ -650,18 +665,22 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
         except Exception as e:
             await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
+            
     elif query.data.startswith("checksub"):
         if AUTH_CHANNEL and not await is_subscribed(client, query):
             await query.answer("Join our backup channel, mahnn! 😒", show_alert=True)
             return
-        ident, file_id = query.data.split("#")        
+        
+        ident, file_id = query.data.split("#")
         files_ = await get_file_details(file_id)
+        
         if not files_:
             return await query.answer('No such file exists.')
         files = files_[0]
         title = files.file_name
         size = get_size(files.file_size)
         f_caption = files.caption
+        
         if CUSTOM_FILE_CAPTION:
             try:
                 f_caption = CUSTOM_FILE_CAPTION.format(file_name='' if title is None else title,
@@ -670,8 +689,10 @@ async def cb_handler(client: Client, query: CallbackQuery):
             except Exception as e:
                 logger.exception(e)
                 f_caption = f_caption
+                
         if f_caption is None:
             f_caption = f"{title}"
+        
         await query.answer()
         file_send = await client.send_cached_media(
             chat_id=FILE_CHANNEL,
@@ -691,9 +712,11 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 ]
             )
         )
+        
         if settings['auto_delete']:
             await asyncio.sleep(600)
             await file_send.delete()
+            
     elif query.data == "predvd":
         files, next_offset, total = await get_bad_files('predvd', offset=0)
         if total > 0:
@@ -920,7 +943,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await query.message.edit_text(
                 "<b>✨ Select the type of files you want to delete!\n\n✨ This will delete 100 files from the database for the selected type.</b>",
                 reply_markup=InlineKeyboardMarkup(btn)
-            )        
+            )
+            
     elif query.data.startswith("opnsetgrp"):
         ident, grp_id = query.data.split("#")
         userid = query.from_user.id if query.from_user else None
@@ -1055,7 +1079,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 disable_web_page_preview=True,
                 parse_mode=enums.ParseMode.HTML,
                 reply_to_message_id=query.message.id
-            )         
+            )
+            
     elif query.data == "pages":
         await query.answer()
     
@@ -1155,6 +1180,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 parse_mode=enums.ParseMode.HTML
             )
             await query.answer(MSG_ALRT)
+            
     elif query.data == "help":
         buttons = [
             [
@@ -1187,6 +1213,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
+        
     elif query.data == "aswin":
         buttons = [
             [
@@ -1220,6 +1247,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
+        
     elif query.data == "aswins":
         buttons = [
             [
@@ -1271,6 +1299,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
+        
     elif query.data == "bot_status":
         buttons = [
             [
@@ -1314,6 +1343,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
+        
     elif query.data == "botfrsh":
         await query.answer("𝔽𝕖𝕥𝕔𝕙𝕚𝕟𝕘 𝕄𝕠𝕟𝕘𝕠𝔻𝕓 𝔻𝕒𝕥𝕒𝕓𝕒𝕤𝕖")
         buttons = [
@@ -1358,6 +1388,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
+        
     elif query.data == "bots":
         buttons = [
             [
@@ -1579,6 +1610,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
+        
     elif query.data == "extra":
         buttons = [
             [
@@ -1631,6 +1663,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
+        
     elif query.data == "tts":
         buttons = [
             [
@@ -1713,6 +1746,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
+        
     elif query.data == "deploy":
         buttons = [
             [
@@ -1809,6 +1843,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
+        
     elif query.data == "carb":
         buttons = [
             [
@@ -1821,6 +1856,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
+        
     elif query.data == "fun":
         buttons = [
             [
@@ -1833,6 +1869,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
+        
     elif query.data == "stats":
         buttons = [
             [
@@ -1858,6 +1895,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
+        
     elif query.data == "rfrsh":
         await query.answer("𝔽𝕖𝕥𝕔𝕙𝕚𝕟𝕘 𝕄𝕠𝕟𝕘𝕠𝔻𝕓 𝔻𝕒𝕥𝕒𝕓𝕒𝕤𝕖")
         buttons = [
@@ -1884,6 +1922,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
+        
     elif query.data.startswith("setgs"):
         ident, set_type, status, grp_id = query.data.split("#")
         grpid = await active_connection(str(query.from_user.id))
@@ -2000,7 +2039,7 @@ async def auto_filter(client, msg, spoll=False):
                             ]
                         )
                     )
-                    await asyncio.sleep(20)
+                    await asyncio.sleep(30)
                     await l.delete()
                     return
         else:
