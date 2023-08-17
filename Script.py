@@ -289,7 +289,7 @@ Free MongoDB Space: <code>{k}</code> 𝙼𝚒𝙱</b>"""
 <b>Hai 👋 {}</b> 😍
 
 <code>{}</code>
-Countdown = {} minutes : {} seconds : {} nanoseconds
+Countdown = {} minutes : {} seconds
 
 ⚠️ <b>This file will be deleted from here within {} minutes as it has copyright ... !!!</b>
 
