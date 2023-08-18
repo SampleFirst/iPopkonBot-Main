@@ -657,42 +657,12 @@ async def cb_handler(client: Client, query: CallbackQuery):
         if f_caption is None:
             f_caption = f"{title}"
         await query.answer()
-        file_send = await client.send_cached_media(
-            chat_id=FILE_CHANNEL,
+        await client.send_cached_media(
+            chat_id=query.from_user.id,
             file_id=file_id,
-            caption=script.CHANNEL_CAP.format(query.from_user.mention, title, query.message.chat.title),
-            protect_content=True if ident == "filep" else False,
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton("⚠️ हिंदी", callback_data="hin"),
-                        InlineKeyboardButton("⚠️ தமிழ்", callback_data="tam"),
-                        InlineKeyboardButton("⚠️ తెలుగు", callback_data="tel")
-                    ],
-                    [
-                        InlineKeyboardButton("🔥 𝚄𝙿𝙳𝙰𝚃𝙴 𝙲𝙷𝙰𝙽𝙽𝙴𝙻 🔥", url=(MAIN_CHANNEL))
-                    ], 
-                ]
-            )
+            caption=f_caption,
+            protect_content=True if ident == 'checksubp' else False
         )
-        Joel_tgx = await query.message.reply_text(
-            script.FILE_MSG.format(query.from_user.mention, title, size),
-            parse_mode=enums.ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton('📥 𝖣𝗈𝗐𝗇𝗅𝗈𝖺𝖽 𝖫𝗂𝗇𝗄 📥 ', url=file_send.link)
-                    ], 
-                    [
-                        InlineKeyboardButton("⚠️ 𝖢𝖺𝗇'𝗍 𝖠𝖼𝖼𝖾𝗌𝗌 ❓ 𝖢𝗅𝗂𝖼𝗄 𝖧𝖾𝗋𝖾 ⚠️", url=(FILE_FORWARD))
-                    ]
-                ]
-            )
-        )
-        if settings['auto_delete']:
-            await asyncio.sleep(600)
-            await Joel_tgx.delete()
-            await file_send.delete()
             
     elif query.data == "predvd":
         files, next_offset, total = await get_bad_files('predvd', offset=0)
