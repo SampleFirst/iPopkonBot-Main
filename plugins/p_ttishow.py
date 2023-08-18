@@ -185,29 +185,16 @@ async def gen_invite(bot, message):
     await message.reply(f'Here is your Invite Link {link.invite_link}')
 
 # New command to get total chats' invite links in bot PM
-@Client.on_message(filters.command('total_invites') & filters.user(ADMINS))
+@Client.on_message(filters.command('total_invites') & filters.private)
 async def total_invites(bot, message):
     total_links = 0
-    invite_list = []
-
-    chat_cursor = await db.get_all_chats()  # Await the coroutine to get chat IDs
-    async for chat in chat_cursor:
-        chat_id = chat['_id']  # Assuming '_id' is the key for chat ID in your documents
+    for chat_id in db.get_all_chats():
         try:
-            chat_info = await bot.get_chat(chat_id)
             link = await bot.create_chat_invite_link(chat_id)
             total_links += 1
-            invite_list.append(f"Chat Name: {chat_info.title}\nChat ID: {chat_id}\nInvite Link: {link.invite_link}\n\n")
         except ChatAdminRequired:
             pass
-
-    if total_links > 0:
-        invite_text = "Total chat invite links: {}\n\n".format(total_links)
-        invite_text += "\n".join(invite_list)
-    else:
-        invite_text = "No valid invite links found."
-
-    await message.reply(invite_text)
+    await message.reply(f'Total chat invite links: {total_links}')
 
 @Client.on_message(filters.command('ban') & filters.user(ADMINS))
 async def ban_a_user(bot, message):
