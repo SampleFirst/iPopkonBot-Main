@@ -185,16 +185,23 @@ async def gen_invite(bot, message):
     await message.reply(f'Here is your Invite Link {link.invite_link}')
 
 # New command to get total chats' invite links in bot PM
-@Client.on_message(filters.command('total_invites') & filters.private)
-async def total_invites(bot, message):
-    total_links = 0
-    for chat_id in db.get_all_chats():
+@Client.on_message(filters.command('listchats') & filters.private & filters.user(ADMINS))
+async def list_chats(bot, message):
+    all_chats = await bot.get_dialogs()
+    chat_links = []
+    for chat in all_chats:
         try:
-            link = await bot.create_chat_invite_link(chat_id)
-            total_links += 1
+            invite_link = await bot.create_chat_invite_link(chat.chat.id)
+            chat_links.append(f"{chat.chat.title}: {invite_link.invite_link}")
         except ChatAdminRequired:
-            pass
-    await message.reply(f'Total chat invite links: {total_links}')
+            chat_links.append(f"{chat.chat.title}: Insufficient rights to generate invite link")
+        except Exception as e:
+            chat_links.append(f"{chat.chat.title}: Error {e}")
+    if chat_links:
+        chat_links_text = "\n".join(chat_links)
+        await message.reply(f'Here are the invite links for all chats:\n\n{chat_links_text}')
+    else:
+        await message.reply('No chats found.')
 
 @Client.on_message(filters.command('ban') & filters.user(ADMINS))
 async def ban_a_user(bot, message):
