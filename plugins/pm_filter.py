@@ -661,7 +661,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             chat_id=FILE_CHANNEL,
             file_id=file_id,
             caption=script.CHANNEL_CAP.format(query.from_user.mention, title, query.message.chat.title),
-            protect_content=True if ident == 'checksubp' else False,
+            protect_content=True if ident == "filep" else False,
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
@@ -675,8 +675,23 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 ]
             )
         )
+        Joel_tgx = await query.message.reply_text(
+            script.FILE_MSG.format(query.from_user.mention, title, size),
+            parse_mode=enums.ParseMode.HTML,
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton('📥 𝖣𝗈𝗐𝗇𝗅𝗈𝖺𝖽 𝖫𝗂𝗇𝗄 📥 ', url=file_send.link)
+                    ], 
+                    [
+                        InlineKeyboardButton("⚠️ 𝖢𝖺𝗇'𝗍 𝖠𝖼𝖼𝖾𝗌𝗌 ❓ 𝖢𝗅𝗂𝖼𝗄 𝖧𝖾𝗋𝖾 ⚠️", url=(FILE_FORWARD))
+                    ]
+                ]
+            )
+        )
         if settings['auto_delete']:
             await asyncio.sleep(600)
+            await Joel_tgx.delete()
             await file_send.delete()
             
     elif query.data == "predvd":
