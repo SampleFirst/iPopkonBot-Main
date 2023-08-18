@@ -184,24 +184,23 @@ async def gen_invite(bot, message):
         return await message.reply(f'Error {e}')
     await message.reply(f'Here is your Invite Link {link.invite_link}')
 
-# New command to get total chats' invite links in bot PM
-@Client.on_message(filters.command('listchats') & filters.private & filters.user(ADMINS))
-async def list_chats(bot, message):
-    all_chats = await bot.get_dialogs()
-    chat_links = []
-    for chat in all_chats:
+@Client.on_message(filters.command('all_invite') & filters.private & filters.user(ADMINS))
+async def gen_all_invite(bot, message):
+    chats = await bot.get_dialogs()
+    invite_links = []
+    for chat in chats:
         try:
             invite_link = await bot.create_chat_invite_link(chat.chat.id)
-            chat_links.append(f"{chat.chat.title}: {invite_link.invite_link}")
+            invite_links.append((chat.chat.title, invite_link.invite_link))
         except ChatAdminRequired:
-            chat_links.append(f"{chat.chat.title}: Insufficient rights to generate invite link")
+            invite_links.append((chat.chat.title, "ChatAdminRequired"))
         except Exception as e:
-            chat_links.append(f"{chat.chat.title}: Error {e}")
-    if chat_links:
-        chat_links_text = "\n".join(chat_links)
-        await message.reply(f'Here are the invite links for all chats:\n\n{chat_links_text}')
-    else:
-        await message.reply('No chats found.')
+            invite_links.append((chat.chat.title, f"Error: {e}"))
+    text = ""
+    for title, link in invite_links:
+        text += f"Chat: {title}\nInvite Link: {link}\n\n"
+    await message.reply(text)
+
 
 @Client.on_message(filters.command('ban') & filters.user(ADMINS))
 async def ban_a_user(bot, message):
