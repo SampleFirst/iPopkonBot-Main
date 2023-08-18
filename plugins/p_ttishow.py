@@ -184,27 +184,41 @@ async def gen_invite(bot, message):
         return await message.reply(f'Error {e}')
     await message.reply(f'Here is your Invite Link {link.invite_link}')
 
-@Client.on_message(filters.command('all_invite') & filters.private & filters.user(ADMINS))
-async def gen_all_invite(bot, message):
-    limit = 20  # Set the limit for the number of chat invite links
-    invite_links = []
+@Client.on_message(filters.command('totalchats') & filters.user(ADMINS))
+async def total_chats(bot, message):
+    total_chats = 0
+    invite_buttons = []
 
-    async for dialog in Client.iter_dialogues():
-        try:
-            if isinstance(dialog.input_entity, InputPeerChat):
-                invite_link = await bot.create_chat_invite_link(dialog.input_entity.chat_id)
-                invite_links.append((dialog.chat.title, invite_link.invite_link))
-                if len(invite_links) >= limit:
-                    break  # Stop after reaching the limit
-        except ChatAdminRequired:
-            invite_links.append((dialog.chat.title, "ChatAdminRequired"))
-        except Exception as e:
-            invite_links.append((dialog.chat.title, f"Error: {e}"))
+    # Calculate total chats and generate invite buttons
+    for chat in db.get_all_chats():  # Replace with your own logic to get chats
+        total_chats += 1
+        invite_buttons.append([InlineKeyboardButton(f'Get link for Chat {chat}', callback_data=f'get_invite_{chat}')])
+
+    if total_chats == 0:
+        await message.reply('No chats found.')
+        return
+
+    # Create and send the InlineKeyboardMarkup
+    reply_markup = InlineKeyboardMarkup(invite_buttons)
+    await message.reply(f'Total Chats in bot admin: {total_chats}', reply_markup=reply_markup)
+
+# Callback handler for invite link button
+@Client.on_callback_query(filters.regex(r'^get_invite_\d+'))
+async def get_invite_link(bot, callback_query):
+    chat_id = int(callback_query.data.split('_')[2])
     
-    text = ""
-    for title, link in invite_links:
-        text += f"Chat: {title}\nInvite Link: {link}\n\n"
-    await message.reply(text)
+    try:
+        link = await bot.create_chat_invite_link(chat_id)
+    except ChatAdminRequired:
+        await callback_query.answer("Invite Link Generation Failed, I am Not Having Sufficient Rights")
+        return
+    except Exception as e:
+        await callback_query.answer(f'Error: {e}', show_alert=True)
+        return
+
+    await callback_query.answer('Invite link generated successfully!', show_alert=True)
+    await bot.send_message(callback_query.from_user.id, f'Here is the Invite Link for Chat {chat_id}: {link.invite_link}')
+
 
 @Client.on_message(filters.command('ban') & filters.user(ADMINS))
 async def ban_a_user(bot, message):
