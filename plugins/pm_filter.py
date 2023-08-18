@@ -336,7 +336,7 @@ async def advantage_spoll_choker(bot, query):
     if not movies:
         return await query.answer(script.OLD_ALRT_TXT.format(query.from_user.first_name), show_alert=True)
     if int(user) != 0 and query.from_user.id != int(user):
-        return await query.answer(script.ALRT_TXT.format(query.from_user.first_name),show_alert=True)
+        return await query.answer(script.ALRT_TXT.format(query.from_user.first_name), show_alert=True)
     if movie_ == "close_spellcheck":
         return await query.message.delete()
     movie = movies[(int(movie_))]
@@ -350,40 +350,9 @@ async def advantage_spoll_choker(bot, query):
         else:
             reqstr1 = query.from_user.id if query.from_user else 0
             reqstr = await bot.get_users(reqstr1)
-            search = movie
-            requested_movie = search.strip()      
-            await bot.send_message(
-                chat_id=REQ_CHANNEL,
-                text=(script.REQ_TEXT.format(reqstr.id, reqstr.mention, movie)),
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton(text="✅Upload Done", callback_data=f"notify_userupl:{reqstr.id}:{requested_movie}")
-                        ],
-                        [
-                            InlineKeyboardButton(text="⚡Already Upl..", callback_data=f"notify_user_alrupl:{reqstr.id}:{requested_movie}"),
-                            InlineKeyboardButton(text="🖊Spell Error", callback_data=f"notify_user_spelling_error:{reqstr.id}:{requested_movie}")
-                        ],
-                        [
-                            InlineKeyboardButton(text="😒Not Available", callback_data=f"notify_user_not_avail:{reqstr.id}:{requested_movie}"),
-                            InlineKeyboardButton(text="❌Reject Req", callback_data=f"notify_user_req_rejected:{reqstr.id}:{requested_movie}")
-                        ],
-                    ]
-                )
-            )
-            
-            k = await query.message.edit(
-                text=(script.MVE_NT_FND.format(reqstr.id, reqstr.mention, search)),
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton("📋 𝚄𝙿𝙳𝙰𝚃𝙴 📋", url=f"https://t.me/iPapkornUpdate"),
-                            InlineKeyboardButton("🤖 𝙼𝙾𝚁𝙴 𝙱𝙾𝚃𝚂 🤖", url=f"https://t.me/iPepkornBots/8")
-                        ]
-                    ]
-                )
-            )
-            await asyncio.sleep(30)
+            await bot.send_message(chat_id=LOG_CHANNEL_PM, text=(script.NORSLTS.format(reqstr.id, reqstr.mention, movie)))
+            k = await query.message.edit(script.MVE_NT_FND)
+            await asyncio.sleep(10)
             await k.delete()
 
 @Client.on_callback_query()
