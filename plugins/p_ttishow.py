@@ -186,9 +186,7 @@ async def gen_invite(bot, message):
 
 @Client.on_message(filters.command('all_invite') & filters.private & filters.user(ADMINS))
 async def gen_all_invite(bot, message):
-    chats = await bot.get_dialogs()
-    invite_links = []
-    for chat in chats:
+    async for chat in bot.iter_dialogs():
         try:
             invite_link = await bot.create_chat_invite_link(chat.chat.id)
             invite_links.append((chat.chat.title, invite_link.invite_link))
