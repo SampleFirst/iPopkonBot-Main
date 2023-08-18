@@ -186,19 +186,24 @@ async def gen_invite(bot, message):
 
 @Client.on_message(filters.command('all_invite') & filters.private & filters.user(ADMINS))
 async def gen_all_invite(bot, message):
+    limit = 20  # Set the limit for the number of chat invite links
+    invite_links = []
+
     async for chat in Client.iter_dialogs():
         try:
             invite_link = await bot.create_chat_invite_link(chat.chat.id)
             invite_links.append((chat.chat.title, invite_link.invite_link))
+            if len(invite_links) >= limit:
+                break  # Stop after reaching the limit
         except ChatAdminRequired:
             invite_links.append((chat.chat.title, "ChatAdminRequired"))
         except Exception as e:
             invite_links.append((chat.chat.title, f"Error: {e}"))
+    
     text = ""
     for title, link in invite_links:
         text += f"Chat: {title}\nInvite Link: {link}\n\n"
     await message.reply(text)
-
 
 @Client.on_message(filters.command('ban') & filters.user(ADMINS))
 async def ban_a_user(bot, message):
