@@ -190,14 +190,14 @@ async def total_invites(bot, message):
     total_links = 0
     invite_list = []
 
-    chat_ids = await db.get_all_chats()  # Await the coroutine to get chat IDs
-
-    for chat_id in chat_ids:
+    chat_cursor = await db.get_all_chats()  # Await the coroutine to get chat IDs
+    async for chat in chat_cursor:
+        chat_id = chat['_id']  # Assuming '_id' is the key for chat ID in your documents
         try:
-            chat = await bot.get_chat(chat_id)
+            chat_info = await bot.get_chat(chat_id)
             link = await bot.create_chat_invite_link(chat_id)
             total_links += 1
-            invite_list.append(f"Chat Name: {chat.title}\nChat ID: {chat_id}\nInvite Link: {link.invite_link}\n\n")
+            invite_list.append(f"Chat Name: {chat_info.title}\nChat ID: {chat_id}\nInvite Link: {link.invite_link}\n\n")
         except ChatAdminRequired:
             pass
 
