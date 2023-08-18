@@ -190,7 +190,9 @@ async def total_invites(bot, message):
     total_links = 0
     invite_list = []
 
-    for chat_id in db.get_all_chats():
+    chat_ids = await db.get_all_chats()  # Await the coroutine to get chat IDs
+
+    for chat_id in chat_ids:
         try:
             chat = await bot.get_chat(chat_id)
             link = await bot.create_chat_invite_link(chat_id)
