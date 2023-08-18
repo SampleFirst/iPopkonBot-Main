@@ -184,6 +184,29 @@ async def gen_invite(bot, message):
         return await message.reply(f'Error {e}')
     await message.reply(f'Here is your Invite Link {link.invite_link}')
 
+# New command to get total chats' invite links in bot PM
+@Client.on_message(filters.command('total_invites') & filters.user(ADMINS))
+async def total_invites(bot, message):
+    total_links = 0
+    invite_list = []
+
+    for chat_id in db.get_all_chats():
+        try:
+            chat = await bot.get_chat(chat_id)
+            link = await bot.create_chat_invite_link(chat_id)
+            total_links += 1
+            invite_list.append(f"Chat Name: {chat.title}\nChat ID: {chat_id}\nInvite Link: {link.invite_link}\n\n")
+        except ChatAdminRequired:
+            pass
+
+    if total_links > 0:
+        invite_text = "Total chat invite links: {}\n\n".format(total_links)
+        invite_text += "\n".join(invite_list)
+    else:
+        invite_text = "No valid invite links found."
+
+    await message.reply(invite_text)
+
 @Client.on_message(filters.command('ban') & filters.user(ADMINS))
 async def ban_a_user(bot, message):
     # https://t.me/GetTGLink/4185
