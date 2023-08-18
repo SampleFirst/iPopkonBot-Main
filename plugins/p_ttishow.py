@@ -184,13 +184,16 @@ async def gen_invite(bot, message):
         return await message.reply(f'Error {e}')
     await message.reply(f'Here is your Invite Link {link.invite_link}')
 
+# New command handler for displaying total chats and invite links
 @Client.on_message(filters.command('totalchats') & filters.user(ADMINS))
 async def total_chats(bot, message):
     total_chats = 0
     invite_buttons = []
 
-    # Calculate total chats and generate invite buttons
-    for chat in db.get_all_chats():  # Replace with your own logic to get chats
+    # Retrieve the result of the coroutine using 'await'
+    chat_list = await db.get_all_chats()
+
+    for chat in chat_list:  # Now you can iterate over the result
         total_chats += 1
         invite_buttons.append([InlineKeyboardButton(f'Get link for Chat {chat}', callback_data=f'get_invite_{chat}')])
 
