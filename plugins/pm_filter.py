@@ -335,7 +335,7 @@ async def advantage_spoll_choker(bot, query):
             reqstr1 = query.from_user.id if query.from_user else 0
             reqstr = await bot.get_users(reqstr1)
             await bot.send_message(chat_id=LOG_CHANNEL_PM, text=(script.NORSLTS.format(reqstr.id, reqstr.mention, movie)))
-            k = await query.message.edit(script.MVE_NT_FND)
+            k = await query.message.edit_text("This movie is not yet released or added to the database")
             await asyncio.sleep(10)
             await k.delete()
 
@@ -2153,11 +2153,11 @@ async def auto_filter(client, msg, spoll=False):
                 await message.reply_text(f"<b>Hᴇʏ {message.from_user.mention}, {str(total_results)} ʀᴇsᴜʟᴛs ᴀʀᴇ ғᴏᴜɴᴅ ɪɴ ᴍʏ ᴅᴀᴛᴀʙᴀsᴇ ғᴏʀ ʏᴏᴜʀ ᴏ̨ᴜᴇʀʏ {search}. Kɪɴᴅʟʏ ᴜsᴇ ɪɴʟɪɴᴇ sᴇᴀʀᴄʜ ᴏʀ ᴍᴀᴋᴇ ᴀ ɢʀᴏᴜᴘ ᴀɴᴅ ᴀᴅᴅ ᴍᴇ ᴀs ᴀᴅᴍɪɴ ᴛᴏ ɢᴇᴛ ᴍᴏᴠɪᴇ ғɪʟᴇs. Tʜɪs ɪs ᴀ sᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ sᴏ ᴛʜᴀᴛ ʏᴏᴜ ᴄᴀɴ'ᴛ ɢᴇᴛ ғɪʟᴇs ғʀᴏᴍ ʜᴇʀᴇ...</b>")
             else:
                 logger.exception(e)
-                fek = await message.reply_photo(photo=NOR_IMG, caption=cap, reply_markup=InlineKeyboardMarkup(btn))
+                fee = await message.reply_photo(photo=NOR_IMG, caption=cap, reply_markup=InlineKeyboardMarkup(btn))
                 try:
                     if settings['auto_delete']:
                         await asyncio.sleep(600)
-                        await fek.delete()
+                        await fee.delete()
                         await message.delete()
                 except KeyError:
                     grpid = await active_connection(str(message.from_user.id))
@@ -2165,7 +2165,7 @@ async def auto_filter(client, msg, spoll=False):
                     settings = await get_settings(message.chat.id)
                     if settings['auto_delete']:
                         await asyncio.sleep(600)
-                        await fek.delete()
+                        await fee.delete()
                         await message.delete()
     else:
         if message.chat.id == SUPPORT_CHAT_ID:
