@@ -10,6 +10,7 @@ class Database:
         self.db = self._client[database_name]
         self.col = self.db.users
         self.grp = self.db.groups
+        self.events = self.db.events  # Added events collection
 
 
     def new_user(self, id, name):
@@ -151,6 +152,17 @@ class Database:
 
     async def get_db_size(self):
         return (await self.db.command("dbstats"))['dataSize']
+
+    async def add_event(self, event_type, chat_id, user_id):
+        event = {
+            'event_type': event_type,
+            'chat_id': chat_id,
+            'user_id': user_id
+        }
+        await self.events.insert_one(event)
+    
+    async def get_all_events(self):
+        return self.events.find({})
 
 
 db = Database(DATABASE_URI, DATABASE_NAME)
