@@ -1,12 +1,12 @@
 from pyrogram import Client, filters, enums
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ChatPermissions
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong, PeerIdInvalid
 from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, MELCOW_NEW_USERS, MELCOW_IMG, MELCOW_VID, MAIN_CHANNEL, S_GROUP
 from database.users_chats_db import db
 from database.ia_filterdb import Media
 from utils import get_size, temp, get_settings
 from Script import script
-from pyrogram.errors import ChatAdminRequired
+from pyrogram.errors import ChatAdminRequired, UserNotParticipant
 import asyncio
 
 """-----------------------------------------https://t.me/GetTGLink/4179 --------------------------------------"""
@@ -324,3 +324,40 @@ async def list_chats(bot, message):
         with open('chats.txt', 'w+') as outfile:
             outfile.write(out)
         await message.reply_document('chats.txt', caption="List Of Chats")
+
+@Client.on_message(filters.command('promote') & filters.user(ADMINS))
+def promote_command(client, message):
+    chat_id = message.chat.id
+
+    # Check if the command is a reply to a message
+    if message.reply_to_message is None:
+        message.reply_text("Please reply to a user's message to promote them.")
+        return
+
+    user_id = message.reply_to_message.from_user.id
+
+    try:
+        # Check if the user is already an admin
+        member = client.get_chat_member(chat_id, user_id)
+        if member.status == "administrator" or member.status == "creator":
+            message.reply_text("User is already an admin.")
+            return
+
+        # Promote the user to admin
+        permissions = ChatPermissions(
+            can_change_info=True,
+            can_delete_messages=True,
+            can_invite_users=True,
+            can_restrict_members=True,
+            can_pin_messages=True,
+            can_promote_members=False
+        )
+        client.promote_chat_member(chat_id, user_id, permissions=permissions)
+
+        message.reply_text("User promoted to admin!")
+
+    except PeerIdInvalid:
+        message.reply_text("Invalid chat ID.")
+    except UserNotParticipant:
+        message.reply_text("The user must be a participant in the chat.")
+
