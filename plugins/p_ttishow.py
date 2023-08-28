@@ -346,11 +346,10 @@ def promote_command(client, message):
         # Promote the user to admin
         permissions = ChatPermissions(
             can_change_info=True,
-            can_delete_messages=True,
             can_invite_users=True,
             can_restrict_members=True,
             can_pin_messages=True,
-            can_promote_members=False
+            can_promote_members=True
         )
         client.promote_chat_member(chat_id, user_id, permissions=permissions)
 
