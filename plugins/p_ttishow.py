@@ -4,6 +4,7 @@ from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong, PeerIdInv
 from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, MELCOW_NEW_USERS, MELCOW_IMG, MELCOW_VID, MAIN_CHANNEL, S_GROUP
 from database.users_chats_db import db
 from database.ia_filterdb import Media
+from database.permissions import ChatPermissions  # Import the custom ChatPermissions class
 from utils import get_size, temp, get_settings
 from Script import script
 from pyrogram.errors import ChatAdminRequired, UserNotParticipant
@@ -346,10 +347,13 @@ def promote_command(client, message):
         # Promote the user to admin
         permissions = ChatPermissions(
             can_change_info=True,
+            can_post_messages=True,
+            can_edit_messages=True,
+            can_delete_messages=True,
             can_invite_users=True,
             can_restrict_members=True,
             can_pin_messages=True,
-            can_promote_members=True
+            can_promote_members=False
         )
         client.promote_chat_member(chat_id, user_id, permissions=permissions)
 
@@ -359,4 +363,3 @@ def promote_command(client, message):
         message.reply_text("Invalid chat ID.")
     except UserNotParticipant:
         message.reply_text("The user must be a participant in the chat.")
-
