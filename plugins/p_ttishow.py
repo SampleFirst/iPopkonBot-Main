@@ -327,32 +327,44 @@ async def list_chats(bot, message):
         await message.reply_document('chats.txt', caption="List Of Chats")
 
 # Define the promote command
+@Client.on_message(filters.command("promote"))
+async def promote_command(client: Client, message: Message):
+    chat = message.chat
+    user = message.from_user
+    args = message.text.split()[1:]
 
-# Define the promote command
-@Client.on_message(filters.command('promote') & filters.user(ADMINS))
-def promote_command(client, message):
-    chat_id = message.chat.id
-
-    # Check if the command is a reply to a message
-    if message.reply_to_message is None:
-        message.reply_text("Please reply to a user's message to promote them.")
+    if not args:
+        await message.reply_text("You don't seem to be referring to a user.")
         return
 
-    user_id = message.reply_to_message.from_user.id
+    user_id = await extract_user(message, args)
+    if not user_id:
+        await message.reply_text("You don't seem to be referring to a user.")
+        return
 
-    try:
-        # Check if the user is already an admin
-        member = client.get_chat_member(chat_id, user_id)
-        if member.status == "administrator" or member.status == "creator":
-            message.reply_text("User is already an admin.")
-            return
+    user_member = await client.get_chat_member(chat.id, user_id)
+    if user_member.status in ["administrator", "creator"]:
+        await message.reply_text("How am I meant to promote someone that's already an admin?")
+        return
 
-        # Promote the user to admin using set_chat_administrator_custom_title
-        client.set_chat_administrator_custom_title(chat_id, user_id, "Admin")
+    bot_member = await client.get_chat_member(chat.id, client.me.id)
+    await client.promote_chat_member(
+        chat.id,
+        user_id,
+        can_change_info=bot_member.can_change_info,
+        can_post_messages=bot_member.can_post_messages,
+        can_edit_messages=bot_member.can_edit_messages,
+        can_delete_messages=bot_member.can_delete_messages,
+        can_restrict_members=bot_member.can_restrict_members,
+        can_pin_messages=bot_member.can_pin_messages,
+        can_promote_members=bot_member.can_promote_members
+    )
 
-        message.reply_text("User promoted to admin!")
-
-    except PeerIdInvalid:
-        message.reply_text("Invalid chat ID.")
-    except UserNotParticipant:
-        message.reply_text("The user must be a participant in the chat.")
+    await message.reply_text("Successfully promoted!")
+    promote_message = (
+        f"<b>{html.escape(chat.title)}:</b>"
+        f"\n#PROMOTED"
+        f"\n<b>Admin:</b> {mention_html(user.id, user.first_name)}"
+        f"\n<b>User:</b> {mention_html(user_member.user.id, user_member.user.first_name)}"
+    )
+    await client.send_message(chat.id, promote_message, parse_mode="html")
