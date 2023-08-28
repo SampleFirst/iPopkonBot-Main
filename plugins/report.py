@@ -12,13 +12,12 @@ def get_indian_time():
     indian_timezone = pytz.timezone("Asia/Kolkata")
     return utc_now.astimezone(indian_timezone)
 
-# Your existing code here...
 
 # Modify the send_log_message function
 async def send_log_message(chat_id):
     while True:
         indian_now = get_indian_time()
-        if indian_now.hour == 2 and indian_now.minute == 29:
+        if indian_now.hour == 2 and indian_now.minute == 42:
             message = f"This is a daily log message. Current Indian Time: {indian_now.strftime('%Y-%m-%d %H:%M:%S')}"
             await bot.send_message(LOG_CHANNEL, message)
         await asyncio.sleep(60)  # Sleep for 1 minute
@@ -30,8 +29,8 @@ async def send_log_message(chat_id):
 # Dictionary to keep track of active tasks
 active_tasks = {}
 
-@Client.on_message(filters.private & filters.user(ADMINS) & filters.command("Reporting"))
-async def start_command_handler(_, message):
+@Client.on_message(filters.command('Reporting') & filters.user(ADMINS))
+async def report_send(client, message):
     keyboard = InlineKeyboardMarkup(
         [
             [
@@ -46,7 +45,7 @@ async def start_command_handler(_, message):
     await message.reply("Log message sending started. Click 'Stop' to stop.", reply_markup=keyboard)
 
 @Client.on_callback_query(filters.user(ADMINS))
-async def callback_handler(_, query: CallbackQuery):
+async def callback_handler(bot, query: CallbackQuery):
     chat_id = query.message.chat.id
     data = query.data
 
@@ -87,5 +86,3 @@ async def callback_handler(_, query: CallbackQuery):
             ]
         )
         await query.message.edit_text("Log message sending canceled.", reply_markup=keyboard)
-
-
