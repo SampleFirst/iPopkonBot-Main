@@ -1,5 +1,6 @@
 # Create a new file named 'permissions.py'
 # Define the ChatPermissions class with the appropriate attributes
+from pyrogram.types import ChatPermissions
 
 class ChatPermissions:
     def __init__(
