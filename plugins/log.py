@@ -29,7 +29,7 @@ async def send_log_message(chat_id):
 # Dictionary to keep track of active tasks
 active_tasks = {}
 
-@Client.on_message(filters.command('Reporting') & filters.user(ADMINS))
+@Client.on_message(filters.command('Report') & filters.user(ADMINS))
 async def report_send(client, message):
     keyboard = InlineKeyboardMarkup(
         [
