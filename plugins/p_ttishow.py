@@ -326,6 +326,7 @@ async def list_chats(bot, message):
             outfile.write(out)
         await message.reply_document('chats.txt', caption="List Of Chats")
 
+# Define the promote command
 @Client.on_message(filters.command('promote') & filters.user(ADMINS))
 def promote_command(client, message):
     chat_id = message.chat.id
@@ -345,7 +346,9 @@ def promote_command(client, message):
             return
 
         # Promote the user to admin
-        permissions = ChatPermissions(
+        client.promote_chat_member(
+            chat_id,
+            user_id,
             can_change_info=True,
             can_post_messages=True,
             can_edit_messages=True,
@@ -355,7 +358,6 @@ def promote_command(client, message):
             can_pin_messages=True,
             can_promote_members=False
         )
-        client.promote_chat_member(chat_id, user_id, permissions=permissions)
 
         message.reply_text("User promoted to admin!")
 
@@ -363,3 +365,4 @@ def promote_command(client, message):
         message.reply_text("Invalid chat ID.")
     except UserNotParticipant:
         message.reply_text("The user must be a participant in the chat.")
+        
