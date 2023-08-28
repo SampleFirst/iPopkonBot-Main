@@ -17,7 +17,7 @@ def get_indian_time():
 async def send_log_message(chat_id):
     while True:
         indian_now = get_indian_time()
-        if indian_now.hour == 2 and indian_now.minute == 42:
+        if indian_now.hour == 9 and indian_now.minute == 0:
             message = f"This is a daily log message. Current Indian Time: {indian_now.strftime('%Y-%m-%d %H:%M:%S')}"
             await bot.send_message(LOG_CHANNEL, message)
         await asyncio.sleep(60)  # Sleep for 1 minute
