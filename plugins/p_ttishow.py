@@ -328,7 +328,7 @@ async def list_chats(bot, message):
 
 # Define the promote command
 @Client.on_message(filters.command("promote"))
-async def promote_command(client: Client, message: Message):
+async def promote_command(client, message):
     chat = message.chat
     user = message.from_user
     args = message.text.split()[1:]
