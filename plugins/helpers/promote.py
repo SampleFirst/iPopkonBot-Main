@@ -29,11 +29,11 @@ async def promote_user(client, message):
     try:
         permissions = ChatPermissions(
             can_change_info=True,
-            can_delete_messages=True,
-            can_restrict_members=True,
-            can_invite_users=True,
-            can_pin_messages=True,
-            can_manage_voice_chats=True,
+            can_delete_messages=False,
+            can_restrict_members=False,
+            can_invite_users=False,
+            can_pin_messages=False,
+            can_manage_voice_chats=False,
             can_promote_members=False  # To prevent the promoted user from promoting others
         )
         
