@@ -1,5 +1,5 @@
 from pyrogram import Client, filters
-from pyrogram.types import ChatMember, ChatPrivileges
+from pyrogram.types import ChatMember, ChatPermissions
 from info import *
 
 # Define the add_admins command handler
@@ -19,7 +19,7 @@ async def add_admins(client, message):
             user=None,  # You can provide user information here if needed
             chat=None,  # You can provide chat information here if needed
             can_be_edited=False,  # Customize as needed
-            privileges=ChatPrivileges(),  # Customize permissions as needed
+            permissions=ChatPermissions(),  # Customize permissions as needed
         )
 
         await client.promote_chat_member(channel_id, user_id, admin_member)
