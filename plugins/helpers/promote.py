@@ -29,41 +29,35 @@ async def promote_user(client, message):
 
     if not is_admin:
         await message.reply_text(
-            "Admin privileges are required to promote users."
+            "Attention: Admin Privileges Required\n\n"
+            "Dear member,\n\n"
+            "However, to access this, we kindly request that you ensure you have admin privileges within our group."
         )
         return
 
     user_id, user_first_name = get_user_details(message)
 
-    if not user_id:
-        await message.reply_text("You don't seem to be referring to a user.")
-        return
+    # Define the chat permissions for the promoted user
+    permissions = ChatPermissions(
+        can_send_messages=True,
+        can_send_media_messages=True,
+        can_send_other_messages=True,
+        can_send_polls=True,
+        can_add_web_page_previews=True,
+        can_change_info=True,
+        can_invite_users=True,
+        can_pin_messages=True
+    )
 
     try:
-        user_member = await client.get_chat_member(message.chat.id, user_id)
-
-        if user_member.status in ('administrator', 'creator'):
-            await message.reply_text("The user is already an admin or creator.")
-            return
-
-        if user_id == client.me.id:
-            await message.reply_text("I can't promote myself! Get an admin to do it for me.")
-            return
-
-        permissions = get_chat_permissions()  # Use the function to get ChatPermissions
-
-        await client.promote_chat_member(
-            chat_id=message.chat.id,
-            user_id=user_id,
-            permissions=permissions
-        )
-
-        await message.reply_text(
-            f"✨ {user_first_name} has been promoted to an admin! 🎉"
-        )
+        await message.chat.promote_member(user_id, permissions=permissions)
     except Exception as error:
         await message.reply_text(str(error))
-
+    else:
+        await message.reply_text(
+            f"✨ {user_first_name} has been promoted to an admin with enhanced permissions! 🎉"
+        )
+        
 
 @Client.on_message(filters.command("demote_user") & filters.user(ADMINS))
 async def demote_user(client, message):
