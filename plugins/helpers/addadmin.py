@@ -3,8 +3,10 @@ from pyrogram.types import ChatMember
 from info import *
 
 # Define the add_admins command handler
-@Client.on_message(filters.command("add_admins") & filters.user(ADMINS))
+@@Client.on_message(filters.command("add_admins") & filters.user(ADMINS))
 async def add_admins(client, message):
+    is_admin = message.from_user and message.from_user.id in ADMINS
+
     if len(message.command) != 3:
         await message.reply("Usage: /add_admin user_id channel_id")
         return
