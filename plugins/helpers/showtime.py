@@ -1,5 +1,6 @@
 import time
 from pyrogram import Client, filters
+from info import *
 
 @Client.on_message(filters.command("showtime") & filters.user(ADMINS))
 def show_time(client, message):
