@@ -6,63 +6,68 @@ from info import *
 def get_user_details(message):
     if message.reply_to_message:
         user = message.reply_to_message.from_user
-        user_id = user.id
-        user_first_name = user.first_name
     else:
-        user_id = message.from_user.id
-        user_first_name = message.from_user.first_name
+        user = message.from_user
+
+    user_id = user.id
+    user_first_name = user.first_name
+
     return user_id, user_first_name
 
+# Function to get ChatPermissions
+def get_chat_permissions():
+    return ChatPermissions(
+        can_change_info=True,
+        can_post_messages=True,
+        can_edit_messages=True,
+        can_delete_messages=True,
+        can_invite_users=True,
+        can_restrict_members=True,
+        can_pin_messages=True,
+        can_promote_members=True
+    )
+
+# Command handler for promoting users
 @Client.on_message(filters.command("promote_user") & filters.user(ADMINS))
 async def promote_user(client, message):
     is_admin = message.from_user and message.from_user.id in ADMINS
-    
-    chat = message.chat
-    user_id = get_user_details(message)
+
+    if not is_admin:
+        await message.reply_text(
+            "Admin privileges are required to promote users."
+        )
+        return
+
+    user_id, user_first_name = get_user_details(message)
 
     if not user_id:
         await message.reply_text("You don't seem to be referring to a user.")
         return
 
     try:
-        user_member = await client.get_chat_member(chat.id, user_id)
-        if user_member.status == 'administrator' or user_member.status == 'creator':
-            await message.reply_text("How am I meant to promote someone that's already an admin?")
+        user_member = await client.get_chat_member(message.chat.id, user_id)
+
+        if user_member.status in ('administrator', 'creator'):
+            await message.reply_text("The user is already an admin or creator.")
             return
-    
-        if user_id == (await client.get_me()).id:
+
+        if user_id == client.me.id:
             await message.reply_text("I can't promote myself! Get an admin to do it for me.")
             return
-    
-        # Set the same permissions as the bot - bot can't assign higher permissions than itself!
-        bot_member = await client.get_chat_member(chat.id, (await client.get_me()).id)
-        permissions = {
-            "can_change_info": bot_member.can_change_info,
-            "can_post_messages": bot_member.can_post_messages,
-            "can_edit_messages": bot_member.can_edit_messages,
-            "can_delete_messages": bot_member.can_delete_messages,
-            "can_restrict_members": bot_member.can_restrict_members,
-            "can_pin_messages": bot_member.can_pin_messages,
-            "can_promote_members": bot_member.can_promote_members,
-        }
-        
+
+        permissions = get_chat_permissions()  # Use the function to get ChatPermissions
+
         await client.promote_chat_member(
-            chat.id=chat_id,
+            chat_id=message.chat.id,
             user_id=user_id,
-            can_change_info=permissions["can_change_info"],
-            can_post_messages=permissions["can_post_messages"],
-            can_edit_messages=permissions["can_edit_messages"],
-            can_delete_messages=permissions["can_delete_messages"],
-            can_restrict_members=permissions["can_restrict_members"],
-            can_pin_messages=permissions["can_pin_messages"],
-            can_promote_members=permissions["can_promote_members"]
+            permissions=permissions
         )
-       await message.reply_text(
+
+        await message.reply_text(
             f"✨ {user_first_name} has been promoted to an admin! 🎉"
         )
     except Exception as error:
         await message.reply_text(str(error))
-
 
 
 @Client.on_message(filters.command("demote_user") & filters.user(ADMINS))
