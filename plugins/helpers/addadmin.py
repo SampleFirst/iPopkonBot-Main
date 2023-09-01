@@ -2,12 +2,11 @@ from pyrogram import Client, filters
 from pyrogram.types import ChatMember
 from info import *
 
-
 # Define the add_admins command handler
 @Client.on_message(filters.command("add_admins") & filters.user(ADMINS))
 async def add_admins(client, message):
     if len(message.command) != 3:
-        await message.reply("Usage: /add_admin <user_id> <channel_id>")
+        await message.reply("Usage: /add_admin user_id channel_id")
         return
 
     user_id = int(message.command[1])
@@ -17,7 +16,7 @@ async def add_admins(client, message):
         await client.promote_chat_member(
             chat_id=channel_id,
             user_id=user_id,
-            can_manage_chat=True,
+            is_admin=True,
             can_change_info=True,
             can_post_messages=True,
             can_edit_messages=True,
