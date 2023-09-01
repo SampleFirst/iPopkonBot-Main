@@ -45,11 +45,8 @@ async def promote_user(client, message):
             can_add_web_page_previews=True 
         )
 
-        await client.promote_chat_member(
-            chat_id=message.chat.id,
-            user_id=user_id,
-            permissions=permissions
-        )
+        await client.promote_chat_member(chat_id, user_id, permissions)
+        
 
         await message.reply_text(
             f"✨ {user_first_name} has been promoted to an admin! 🎉"
@@ -66,10 +63,10 @@ async def demote_user(client, message):
         return
 
     try:
-        await client.promote_chat_member(
+        await client.restrict_chat_member(
             chat_id=message.chat.id,
             user_id=user_id,
-            permissions=ChatPermissions()
+            permissions=ChatPermissions(can_send_messages=True)
         )
 
         await message.reply_text(f"🔥 {user_first_name} has been demoted to a regular member!")
