@@ -12,7 +12,7 @@ async def add_admins(client, message):
         user_id = int(message.text.split(" ")[1])
 
         # Define desired chat permissions for the new admin
-        privileges = chat_privileges(
+        privileges = ChatPrivileges(
             can_change_info=True,
             can_post_messages=True,
             can_edit_messages=True,
