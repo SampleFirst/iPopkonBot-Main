@@ -17,16 +17,12 @@ def get_user_details(message):
 # Function to get ChatPermissions
 def get_chat_permissions():
     return ChatPermissions(
-        change_info=True,
-        post_messages=True,
-        edit_messages=True,
-        delete_messages=True,
-        invite_users=True,
-        restrict_members=True,
-        pin_messages=True,
-        promote_members=True
+        can_change_info=True,
+        can_delete_messages=True,
+        can_pin_messages=True,
+        can_add_admins=True
+        
     )
-
 # Command handler for promoting users
 @Client.on_message(filters.command("promote_user") & filters.user(ADMINS))
 async def promote_user(client, message):
