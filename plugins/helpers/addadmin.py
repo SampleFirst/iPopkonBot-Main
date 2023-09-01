@@ -11,12 +11,11 @@ async def add_admins(client, message):
 
     user_id = int(message.command[1])
     channel_id = int(message.command[2])
-
+    
     try:
-        # Get the bot's member information in the chat
-        bot_member = await client.get_chat_member(chat.id, bot.id)
+        chat = await client.get_chat(channel_id)
+        bot_member = await chat.get_member(client.me.id)
 
-        # Promote the user to admin with custom privileges
         await client.promote_chat_member(
             chat_id=channel_id,
             user_id=user_id,
