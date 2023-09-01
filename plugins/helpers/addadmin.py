@@ -26,7 +26,7 @@ async def add_admins(client, message):
         )
 
         # Promote the user to admin with desired permissions
-        await client.promote_chat_member(chat_id, user_id, ChatPrivileges=privileges)
+        await client.promote_chat_member(chat_id, user_id, privileges)
 
         await message.reply("User has been added as an admin.")
     except Exception as e:
