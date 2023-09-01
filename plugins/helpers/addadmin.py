@@ -13,11 +13,7 @@ async def add_admins(client, message):
     channel_id = int(message.command[2])
     
     try:
-        await client.promote_chat_member(
-            chat_id=channel_id,
-            user_id=user_id,
-            ChatMember()
-        )
+        await client.promote_chat_member(channel_id, user_id, ChatMember())
 
         await message.reply(f"Admin with user ID {user_id} added to the channel with custom privileges.")
     except Exception as e:
