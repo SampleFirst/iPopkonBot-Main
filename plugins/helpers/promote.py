@@ -1,6 +1,8 @@
 from pyrogram import Client, filters
-from pyrogram.types import ChatPermissions
-from info import *
+rom pyrogram.types import ChatPermissions
+from pyrogram.errors import UserAdminInvalid
+
+from info import ADMINS
 
 # Updated extract_user function to extract user details
 def get_user_details(message):
@@ -14,15 +16,6 @@ def get_user_details(message):
 
     return user_id, user_first_name
 
-# Function to get ChatPermissions
-def get_chat_permissions():
-    return ChatPermissions(
-        can_change_info=True,
-        can_pin_messages=True
-    )
-
-
-# Command handler for promoting users
 @Client.on_message(filters.command("promote_user") & filters.user(ADMINS))
 async def promote_user(client, message):
     is_admin = message.from_user and message.from_user.id in ADMINS
@@ -50,7 +43,21 @@ async def promote_user(client, message):
     )
 
     try:
-        await message.chat.promote_member(user_id, permissions=permissions)
+        await message.chat.promote_chat_member(
+            user_id, 
+            can_send_messages=True,
+            can_send_media_messages=True,
+            can_send_other_messages=True,
+            can_send_polls=True,
+            can_add_web_page_previews=True,
+            can_change_info=True,
+            can_invite_users=True,
+            can_pin_messages=True
+        )
+    except UserAdminInvalid:
+        await message.reply_text(
+            "Unable to promote the user. Please make sure the user is a member of the group and try again."
+        )
     except Exception as error:
         await message.reply_text(str(error))
     else:
