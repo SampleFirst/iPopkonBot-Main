@@ -13,7 +13,6 @@ def get_user_details(message):
         user_first_name = message.from_user.first_name
     return user_id, user_first_name
 
-
 @Client.on_message(filters.command("promote_user") & filters.user(ADMINS))
 async def promote_user(client, message):
     is_admin = message.from_user and message.from_user.id in ADMINS
@@ -25,24 +24,38 @@ async def promote_user(client, message):
         return
 
     user_id, user_first_name = get_user_details(message)
-    
-    try:
-        permissions = ChatPermissions(
-            can_change_info=True,
-            can_delete_messages=False,
-            can_restrict_members=False,
-            can_invite_users=False,
-            can_pin_messages=False,
-            can_manage_voice_chats=False,
-            can_promote_members=False  # To prevent the promoted user from promoting others
-        )
+    if not user_id:
+        await message.reply_text("You don't seem to be referring to a user.")
+        return
         
+    try:
+        user_member = await client.get_chat_member(message.chat.id, user_id)
+        if user_member.status == 'administrator' or user_member.status == 'creator':
+            await message.reply_text("How am I meant to promote someone that's already an admin?")
+            return ""
+        
+        if user_id == client.me.id:
+            await message.reply_text("I can't promote myself! Get an admin to do it for me.")
+            return ""
+
+        bot_member = await client.get_chat_member(message.chat.id, client.me.id)
+        permissions = ChatPermissions(
+            can_change_info=bot_member.can_change_info,
+            can_post_messages=bot_member.can_post_messages,
+            can_edit_messages=bot_member.can_edit_messages,
+            can_delete_messages=bot_member.can_delete_messages,
+            can_invite_users=bot_member.can_invite_users,
+            can_restrict_members=bot_member.can_restrict_members,
+            can_pin_messages=bot_member.can_pin_messages,
+            can_promote_members=bot_member.can_promote_members
+        )
+
         await client.promote_chat_member(
             chat_id=message.chat.id,
             user_id=user_id,
             permissions=permissions
         )
-        
+
         await message.reply_text(
             f"✨ {user_first_name} has been promoted to an admin! 🎉"
         )
@@ -60,17 +73,17 @@ async def demote_user(client, message):
         return
 
     user_id, user_first_name = get_user_details(message)
-    
+
     try:
         await client.restrict_chat_member(
             chat_id=message.chat.id,
             user_id=user_id,
             permissions=ChatPermissions()
         )
-        
+
         await message.reply_text(
             f"🔥 {user_first_name} has been demoted to a regular member!"
         )
     except Exception as error:
         await message.reply_text(str(error))
-
+        
