@@ -1,6 +1,6 @@
 import pyrogram
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Callback
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 # Define the game state
