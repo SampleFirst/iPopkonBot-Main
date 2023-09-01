@@ -14,16 +14,9 @@ def get_user_details(message):
 
     return user_id, user_first_name
 
-@Client.on_message(filters.command("promote_user") & filters.user("ADMINS"))
+# Use @Client.on_message for both promote and demote commands
+@Client.on_message(filters.command("promote_user") & filters.user(ADMINS))
 async def promote_user(client, message):
-    is_admin = message.from_user and message.from_user.id in ADMINS
-
-    if not is_admin:
-        await message.reply_text(
-            "Admin privileges are required to promote users."
-        )
-        return
-
     user_id, user_first_name = get_user_details(message)
 
     if not user_id:
@@ -64,48 +57,21 @@ async def promote_user(client, message):
     except Exception as error:
         await message.reply_text(str(error))
 
-@Client.on_message(filters.command("demote_users") & filters.user("ADMINS"))
-async def promote_user(client, message):
-    is_admin = message.from_user and message.from_user.id in ADMINS
-
-    if not is_admin:
-        await message.reply_text(
-            "Attention: Admin Privileges Required\n\n"
-            "Dear member,\n\n"
-            "To access this, we kindly request that you ensure you have admin privileges within our group."
-        )
-        return
-
+@Client.on_message(filters.command("demote_user") & filters.user(ADMINS))
+async def demote_user(client, message):
     user_id, user_first_name = get_user_details(message)
 
-    try:
-        await message.chat.restrict_member(user_id, ChatPermissions())
-    except Exception as error:
-        await message.reply_text(str(error))
-    else:
-        await message.reply_text(f"🔥 {user_first_name} has been demoted to a regular member!"
-        )
-
-
-@Client.on_message(filters.command("demote_users") & filters.user(ADMINS))
-async def promote_user(client, message):
-    is_admin = message.from_user and message.from_user.id in ADMINS
-
-    if not is_admin:
-        await message.reply_text(
-            "Attention: Admin Privileges Required\n\n"
-            "Dear member,\n\n"
-            "To access this, we kindly request that you ensure you have admin privileges within our group."
-        )
+    if not user_id:
+        await message.reply_text("You don't seem to be referring to a user.")
         return
 
-    user_id, user_first_name = get_user_details(message)
-
     try:
-        await message.chat.restrict_member(user_id, ChatPermissions())
-    except Exception as error:
-        await message.reply_text(str(error))
-    else:
-        await message.reply_text(f"🔥 {user_first_name} has been demoted to a regular member!"
+        await client.promote_chat_member(
+            chat_id=message.chat.id,
+            user_id=user_id,
+            permissions=ChatPermissions()
         )
 
+        await message.reply_text(f"🔥 {user_first_name} has been demoted to a regular member!")
+    except Exception as error:
+        await message.reply_text(str(error))
