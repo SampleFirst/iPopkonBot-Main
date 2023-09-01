@@ -13,7 +13,16 @@ async def add_admins(client, message):
     channel_id = int(message.command[2])
     
     try:
-        await client.promote_chat_member(channel_id, user_id, ChatMember())
+        # Create a ChatMember object with status ADMINISTRATOR
+        admin_member = ChatMember(
+            status=enums.ChatMemberStatus.ADMINISTRATOR,
+            user=None,  # You can provide user information here if needed
+            chat=None,  # You can provide chat information here if needed
+            can_be_edited=False,  # Customize as needed
+            permissions=ChatPermissions(),  # Customize permissions as needed
+        )
+
+        await client.promote_chat_member(channel_id, user_id, admin_member)
 
         await message.reply(f"Admin with user ID {user_id} added to the channel with custom privileges.")
     except Exception as e:
