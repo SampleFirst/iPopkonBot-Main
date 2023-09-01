@@ -17,14 +17,14 @@ def get_user_details(message):
 # Function to get ChatPermissions
 def get_chat_permissions():
     return ChatPermissions(
-        can_change_info=True,
-        can_post_messages=True,
-        can_edit_messages=True,
-        can_delete_messages=True,
-        can_invite_users=True,
-        can_restrict_members=True,
-        can_pin_messages=True,
-        can_promote_members=True
+        change_info=True,
+        post_messages=True,
+        edit_messages=True,
+        delete_messages=True,
+        invite_users=True,
+        restrict_members=True,
+        pin_messages=True,
+        promote_members=True
     )
 
 # Command handler for promoting users
