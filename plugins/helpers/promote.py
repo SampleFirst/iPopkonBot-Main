@@ -45,7 +45,7 @@ async def promote_user(client, message):
             can_add_web_page_previews=True 
         )
 
-        await client.promote_chat_member(chat_id, user_id, permissions)
+        await client.promote_chat_member(message.chat.id, user_id, permissions)
         
 
         await message.reply_text(
