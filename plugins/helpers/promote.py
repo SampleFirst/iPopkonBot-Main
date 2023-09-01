@@ -36,13 +36,13 @@ async def promote_user(client, message):
 
         permissions = ChatPermissions(
             can_change_info=True,
-            can_post_messages=True,
-            can_edit_messages=True,
-            can_delete_messages=True,
+            can_send_messages=True,
+            can_send_media_messages=True,
+            can_send_other_messages=True,
             can_invite_users=True,
-            can_restrict_members=True,
+            can_send_polls=True,
             can_pin_messages=True,
-            can_promote_members=True
+            can_add_web_page_previews=True 
         )
 
         await client.promote_chat_member(
