@@ -29,7 +29,7 @@ async def add_admins(client, message):
     channel_id = int(message.command[2])
 
     try:
-        await app.add_chat_members(
+        await client.add_chat_members(
             chat_id=channel_id,
             user_ids=user_id,
             permissions=custom_privileges
