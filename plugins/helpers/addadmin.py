@@ -4,7 +4,7 @@ from pyrogram.errors import UserAdminInvalid
 from info import *
 
 # Define your custom privileges
-custom_privileges = ChatPrivileges(
+privileges = ChatPrivileges(
     can_manage_chat=True,             # Replace with your desired permissions
     can_delete_messages=True,
     can_manage_video_chats=True,
@@ -32,7 +32,7 @@ async def add_admins(client, message):
         await client.add_chat_members(
             chat_id=channel_id,
             user_ids=user_id,
-            permissions=custom_privileges
+            ChatPrivileges=privileges
         )
         await message.reply(f"Admin with user ID {user_id} added to the channel with custom privileges.")
     except UserAdminInvalid:
