@@ -18,8 +18,7 @@ def get_user_details(message):
 def get_chat_permissions():
     return ChatPermissions(
         can_change_info=True,
-        can_pin_messages=True,
-        can_restrict_members=True
+        can_pin_messages=True
     )
 
 
