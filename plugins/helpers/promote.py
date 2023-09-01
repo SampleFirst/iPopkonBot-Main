@@ -14,7 +14,7 @@ def get_user_details(message):
 
     return user_id, user_first_name
 
-@Client.on_message(filters.command("promote_user") & filters.user(ADMINS))
+@Client.on_message(filters.command("promote_user") & filters.user("ADMINS"))
 async def promote_user(client, message):
     is_admin = message.from_user and message.from_user.id in ADMINS
 
@@ -64,7 +64,7 @@ async def promote_user(client, message):
     except Exception as error:
         await message.reply_text(str(error))
 
-@Client.on_message(filters.command("demote_users") & filters.user(ADMINS))
+@Client.on_message(filters.command("demote_users") & filters.user("ADMINS"))
 async def promote_user(client, message):
     is_admin = message.from_user and message.from_user.id in ADMINS
 
