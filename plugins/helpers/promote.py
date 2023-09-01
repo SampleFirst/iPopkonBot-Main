@@ -1,5 +1,5 @@
 from pyrogram import Client, filters
-rom pyrogram.types import ChatPermissions
+from pyrogram.types import ChatPermissions
 from pyrogram.errors import UserAdminInvalid
 
 from info import ADMINS
