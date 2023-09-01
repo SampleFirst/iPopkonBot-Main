@@ -19,8 +19,7 @@ def get_chat_permissions():
     return ChatPermissions(
         can_change_info=True,
         can_pin_messages=True,
-        can_add_admins=True
-        
+        can_promote_members=True
     )
 
 
