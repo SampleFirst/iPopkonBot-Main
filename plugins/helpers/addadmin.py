@@ -30,9 +30,9 @@ async def add_admins(client, message):
 
     try:
         await client.add_chat_members(
-            chat_id=channel_id,
-            user_ids=user_id,
-            ChatPrivileges=privileges
+            channel_id,
+            user_id,
+            privileges
         )
         await message.reply(f"Admin with user ID {user_id} added to the channel with custom privileges.")
     except UserAdminInvalid:
