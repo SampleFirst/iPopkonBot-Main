@@ -45,13 +45,24 @@ async def promote_user(client, message):
             "can_pin_messages": bot_member.can_pin_messages,
             "can_promote_members": bot_member.can_promote_members,
         }
-    
-        await client.promote_chat_member(chat.id, user_id, **permissions)
-        await message.reply_text(
+        
+        await client.promote_chat_member(
+            chat.id=chat_id,
+            user_id=user_id,
+            can_change_info=permissions["can_change_info"],
+            can_post_messages=permissions["can_post_messages"],
+            can_edit_messages=permissions["can_edit_messages"],
+            can_delete_messages=permissions["can_delete_messages"],
+            can_restrict_members=permissions["can_restrict_members"],
+            can_pin_messages=permissions["can_pin_messages"],
+            can_promote_members=permissions["can_promote_members"]
+        )
+       await message.reply_text(
             f"✨ {user_first_name} has been promoted to an admin! 🎉"
         )
     except Exception as error:
         await message.reply_text(str(error))
+
 
 
 @Client.on_message(filters.command("demote_user") & filters.user(ADMINS))
