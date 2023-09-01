@@ -4,7 +4,7 @@ from pyrogram.errors import UserAdminInvalid
 from info import *
 
 # Define your custom privileges
-custom_privileges = ChatPermissions(
+custom_privileges = ChatPrivileges(
     can_manage_chat=True,             # Replace with your desired permissions
     can_delete_messages=True,
     can_manage_video_chats=True,
