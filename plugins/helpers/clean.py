@@ -15,12 +15,11 @@ async def delete_all_messages(client, message: Message):
         chat_id = int(message.command[1])
 
         # Get the list of messages in the chat
-        chat = await client.get_chat(chat_id)
-        messages = await client.get_history(chat.id)
+        messages = await client.get_chat_history(chat_id)
 
         # Iterate through the messages and delete them
         for msg in messages:
-            await client.delete_messages(chat.id, msg.message_id)
+            await client.delete_messages(chat_id, msg.message_id)
 
         # Send a confirmation message
         await message.reply_text(f"All messages in chat {chat_id} have been deleted.")
