@@ -15,8 +15,8 @@ def get_user_details(message):
     return user_id, user_first_name
 
 # Use @Client.on_message for both promote and demote commands
-@Client.on_message(filters.command("promote_user") & filters.user(ADMINS))
-async def promote_user(client, message):
+@Client.on_message(filters.command("promote_users") & filters.user(ADMINS))
+async def promote_users(client, message):
     user_id, user_first_name = get_user_details(message)
 
     if not user_id:
@@ -35,12 +35,14 @@ async def promote_user(client, message):
             return
 
         permissions = ChatPermissions(
-            can_change_info=True,
             can_send_messages=True,
             can_send_media_messages=True,
-            can_invite_users=True,
+            can_send_other_messages=True,
             can_send_polls=True,
-            can_pin_messages=True
+            can_add_web_page_previews=True,
+            can_change_info=True,
+            can_invite_users=True,
+            can_pin_messages=True 
         )
 
         await client.promote_chat_member(message.chat.id, user_id, permissions)
@@ -52,8 +54,8 @@ async def promote_user(client, message):
     except Exception as error:
         await message.reply_text(str(error))
 
-@Client.on_message(filters.command("demote_user") & filters.user(ADMINS))
-async def demote_user(client, message):
+@Client.on_message(filters.command("demote_users") & filters.user(ADMINS))
+async def demote_users(client, message):
     user_id, user_first_name = get_user_details(message)
 
     if not user_id:
