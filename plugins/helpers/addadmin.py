@@ -1,34 +1,94 @@
-from pyrogram import Client, filters, enums
-from pyrogram.types import ChatMember, ChatPrivileges
+from pyrogram import Client, filters
+from pyrogram.types import ChatPermissions, ChatAdminRights
 from info import *
 
-# Define the add_admins command handler
-@Client.on_message(filters.command("add_admins") & filters.user(ADMINS))
-async def add_admins(client, message):
-    if len(message.command) != 3:
-        await message.reply("Usage: /add_admins user_id channel_id")
+
+# Use the `on_message` decorator to handle commands
+@Client.on_message(filters.command("add_admin") & filters.user(ADMINS))
+async def add_admin(client, message):
+    try:
+        # Extract the chat ID and user ID from the message text
+        chat_id, user_id = map(int, message.text.split()[1:])
+    except (ValueError, IndexError):
+        await message.reply("Invalid command format. Use /add_admin <chat_id> <user_id>")
         return
 
-    user_id = int(message.command[1])
-    channel_id = int(message.command[2])
-    
+    # Create chat permissions with almost admin privileges
+    permissions = ChatPermissions(
+        can_send_messages=True,
+        can_send_media_messages=True,
+        can_send_polls=True,
+        can_send_other_messages=True,
+        can_add_web_page_previews=True,
+        can_change_info=True,
+        can_invite_users=True,
+        can_pin_messages=True
+    )
+
+    # Promote the user to admin with the defined permissions
+    await client.promote_chat_member(
+        chat_id=chat_id,
+        user_id=user_id,
+        permissions=permissions,
+    )
+
+    await message.reply(f"User {user_id} has been promoted to admin in chat {chat_id}")
+
+@Client.on_message(filters.command("promote_user") & filters.user(ADMINS))
+async def promote_user(client, message):
     try:
-        # Get the user and chat objects
-        user = await client.get_users(user_id)
-        chat = await client.get_chat(channel_id)
+        # Extract the chat ID and user ID from the message text
+        chat_id, user_id = map(int, message.text.split()[1:])
+    except (ValueError, IndexError):
+        await message.reply("Invalid command format. Use /promote <chat_id> <user_id>")
+        return
 
-        # Create a ChatMember object with custom privileges
-        admin_member = ChatMember(
-            status=enums.ChatMemberStatus.ADMINISTRATOR,
-            user=user,
-            chat=chat,
-            can_be_edited=True,
-            can_promote_members=True  # Set the privilege directly
-        )
+    # Create chat admin rights with most admin privileges
+    admin_rights = ChatAdminRights(
+        can_manage_chat=True,
+        can_delete_messages=True,
+        can_manage_voice_chats=True,
+        can_restrict_members=True,
+        can_promote_members=True,
+        can_change_info=True,
+        can_post_messages=True,
+        can_edit_messages=True,
+        can_invite_users=True,
+        can_pin_messages=True
+    )
 
-        # Promote the user to an administrator
-        await client.promote_chat_member(channel_id, user_id, admin_member)
+    # Promote the user to admin with the defined admin rights
+    await client.promote_chat_member(
+        chat_id=chat_id,
+        user_id=user_id,
+        admin_rights=admin_rights,
+    )
 
-        await message.reply(f"Admin with user ID {user_id} added to the channel with custom privileges and can be edited.")
-    except Exception as e:
-        await message.reply(f"An error occurred: {str(e)}")
+    await message.reply(f"User {user_id} has been promoted to admin in chat {chat_id}")
+
+@Client.on_message(filters.command("demote_user") & filters.user(ADMINS))
+async def demote_user(client, message):
+    try:
+        # Extract the chat ID and user ID from the message text
+        chat_id, user_id = map(int, message.text.split()[1:])
+    except (ValueError, IndexError):
+        await message.reply("Invalid command format. Use /demote <chat_id> <user_id>")
+        return
+
+    # Revoke admin rights to demote the user
+    await client.promote_chat_member(
+        chat_id=chat_id,
+        user_id=user_id,
+        can_change_info=False,
+        can_post_messages=None,
+        can_edit_messages=None,
+        can_delete_messages=None,
+        can_invite_users=None,
+        can_restrict_members=None,
+        can_pin_messages=None,
+        can_promote_members=None,
+        can_manage_voice_chats=None,
+        can_manage_chat=None,
+    )
+
+    await message.reply(f"User {user_id} has been demoted to a regular user in chat {chat_id}")
