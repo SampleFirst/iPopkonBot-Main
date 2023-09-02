@@ -1,5 +1,6 @@
 from pyrogram import Client, filters
-from pyrogram.types import ChatPermissions, ChatAdminRights
+from pyrogram.types import ChatPermissions
+from pyrogram.types.chat_privileges import ChatAdminRights
 from info import *
 
 
