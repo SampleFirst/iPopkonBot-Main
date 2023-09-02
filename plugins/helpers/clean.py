@@ -2,7 +2,6 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 from info import *
 
-
 # Define a command handler to listen for admin commands
 @Client.on_message(filters.command("clean") & filters.user(ADMINS))
 async def delete_all_messages(client, message: Message):
@@ -16,11 +15,12 @@ async def delete_all_messages(client, message: Message):
         chat_id = int(message.command[1])
 
         # Get the list of messages in the chat
-        messages = await client.get_history(chat_id)
+        chat = await client.get_chat(chat_id)
+        messages = await client.get_history(chat.id)
 
         # Iterate through the messages and delete them
         for msg in messages:
-            await client.delete_messages(chat_id, msg.message_id)
+            await client.delete_messages(chat.id, msg.message_id)
 
         # Send a confirmation message
         await message.reply_text(f"All messages in chat {chat_id} have been deleted.")
