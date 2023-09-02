@@ -34,8 +34,8 @@ async def add_admin(client, message):
 
     await message.reply(f"User {user_id} has been promoted to admin in chat {chat_id}")
 
-@Client.on_message(filters.command("promote_user") & filters.user(ADMINS))
-async def promote_user(client, message):
+@Client.on_message(filters.command("promote_u") & filters.user(ADMINS))
+async def promote_user_admin(client, message):
     try:
         # Extract the chat ID and user ID from the message text
         chat_id, user_id = map(int, message.text.split()[1:])
@@ -66,8 +66,8 @@ async def promote_user(client, message):
 
     await message.reply(f"User {user_id} has been promoted to admin in chat {chat_id}")
 
-@Client.on_message(filters.command("demote_user") & filters.user(ADMINS))
-async def demote_user(client, message):
+@Client.on_message(filters.command("demote_u") & filters.user(ADMINS))
+async def demote_user_admin(client, message):
     try:
         # Extract the chat ID and user ID from the message text
         chat_id, user_id = map(int, message.text.split()[1:])
