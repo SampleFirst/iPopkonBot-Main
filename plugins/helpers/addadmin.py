@@ -1,36 +1,75 @@
 from pyrogram import Client, filters
-from pyrogram.types import ChatPermissions
+from pyrogram.types import ChatPrivileges
 from info import *
 
+# Updated extract_user function to extract user details
+def get_user_details(message):
+    if message.reply_to_message:
+        user = message.reply_to_message.from_user
+    else:
+        user = message.from_user
 
-# Use the `on_message` decorator to handle commands
+    user_id = user.id
+    user_first_name = user.first_name
+
+    return user_id, user_first_name
+
+# Use @Client.on_message for both promote and demote commands
 @Client.on_message(filters.command("add_admin") & filters.user(ADMINS))
-async def add_admin(client, message):
-    try:
-        # Extract the chat ID and user ID from the message text
-        chat_id, user_id = map(int, message.text.split()[1:])
-    except (ValueError, IndexError):
-        await message.reply("Invalid command format. Use /add_admin <chat_id> <user_id>")
+async def add_admins(client, message):
+    user_id, user_first_name = get_user_details(message)
+
+    if not user_id:
+        await message.reply_text("You don't seem to be referring to a user.")
         return
 
-    # Create chat permissions with almost admin privileges
-    permissions = ChatPermissions(
-        can_send_messages=True,
-        can_send_media_messages=True,
-        can_send_polls=True,
-        can_send_other_messages=True,
-        can_add_web_page_previews=True,
-        can_change_info=True,
-        can_invite_users=True,
-        can_pin_messages=True
-    )
+    try:
+        user_member = await client.get_chat_member(message.chat.id, user_id)
 
-    # Promote the user to admin with the defined permissions
-    await client.promote_chat_member(
-        chat_id=chat_id,
-        user_id=user_id,
-        permissions=permissions,
-    )
+        if user_member.status in ('administrator', 'creator'):
+            await message.reply_text("The user is already an admin or creator.")
+            return
 
-    await message.reply(f"User {user_id} has been promoted to admin in chat {chat_id}")
-    
+        if user_id == client.me.id:
+            await message.reply_text("I can't promote myself! Get an admin to do it for me.")
+            return
+
+        privileges = ChatPrivileges(
+            can_manage_chat=True,
+            can_delete_messages=True,
+            can_restrict_members=True,
+            can_promote_members=True,
+            can_change_info=True,
+            can_post_messages=True,
+            can_edit_messages=True,
+            can_invite_users=True,
+            can_pin_messages=True
+        )
+
+        await client.promote_chat_member(message.chat.id, user_id, privileges)
+        
+
+        await message.reply_text(
+            f"✨ {user_first_name} has been promoted to an admin! 🎉"
+        )
+    except Exception as error:
+        await message.reply_text(str(error))
+
+@Client.on_message(filters.command("remove_admin") & filters.user(ADMINS))
+async def remove_admins(client, message):
+    user_id, user_first_name = get_user_details(message)
+
+    if not user_id:
+        await message.reply_text("You don't seem to be referring to a user.")
+        return
+
+    try:
+        await client.restrict_chat_member(
+            chat_id=message.chat.id,
+            user_id=user_id,
+            privileges=ChatPrivileges(can_post_messages=True, can_edit_messages=True)
+        )
+
+        await message.reply_text(f"🔥 {user_first_name} has been demoted to a regular member!")
+    except Exception as error:
+        await message.reply_text(str(error))
