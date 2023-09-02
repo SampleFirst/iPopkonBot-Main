@@ -14,7 +14,10 @@ async def show_time(client, message):
 
     while should_continue:
         current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        await client.edit_message_text(chat_id, sent_message.message_id, f"Current Date and Time: {current_time}")
+        try:
+            await client.edit_message_text(chat_id, sent_message.message_id, f"Current Date and Time:\n{current_time}")
+        except Exception as e:
+            print(f"An error occurred while editing message: {e}")
         time.sleep(1)
 
 @Client.on_message(filters.command("stopshowtime") & filters.user(ADMINS))
