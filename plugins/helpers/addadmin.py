@@ -82,8 +82,7 @@ async def add_group_admin(client, message):
                     can_restrict_members=True,
                     can_promote_members=True,
                     can_invite_users=True,
-                    can_pin_messages=True,
-                    is_anonymous=True,
+                    can_pin_messages=True
                 )
                 await message.reply(f"User added as an admin in group {chat_id} with specified privileges.")
 
