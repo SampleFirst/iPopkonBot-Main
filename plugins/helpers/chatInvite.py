@@ -4,8 +4,7 @@ from pyrogram.errors.exceptions import ChatAdminRequired, MessageTooLong
 from database.users_chats_db import db
 from info import ADMINS
 
-# Store chat invite links in a global variable
-chat_invite_links = []
+
 
 # Define a constant for results per page
 RESULTS_PER_PAGE = 10
@@ -21,7 +20,12 @@ async def list_all_chats_invites(bot: Client, message: Message):
     global chat_invite_links
 
     raju = await message.reply('Getting List Of Chat Invite Links')
-    chats = await db.get_all_chats()
+    
+    # Fetch chats using await
+    chats_cursor = await db.get_all_chats()
+    
+    # Convert the cursor to a list of dictionaries
+    chats = [chat async for chat in chats_cursor]
 
     chat_invite_links = []
 
