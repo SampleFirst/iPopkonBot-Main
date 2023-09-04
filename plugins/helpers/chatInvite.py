@@ -72,7 +72,7 @@ async def list_all_chats_invites(bot: Client, message: Message):
         except MessageTooLong:
             await raju.edit_text("The output is too long. Please download the file.")
 
-@Client.on_callback_query()
+@Client.on_callback_query(filters.regex(r'^(prev|next)_(\d+)$'))
 async def handle_callback_query(bot: Client, query: CallbackQuery):
     global chat_invite_links
 
