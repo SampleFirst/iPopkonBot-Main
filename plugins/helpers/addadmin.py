@@ -1,75 +1,83 @@
 from pyrogram import Client, filters
+from pyrogram.errors import UserNotParticipant
 from pyrogram.types import ChatPrivileges
-from info import *
+from info import ADMINS
 
-# Updated extract_user function to extract user details
-def get_user_details(message):
-    if message.reply_to_message:
-        user = message.reply_to_message.from_user
-    else:
-        user = message.from_user
+# Replace this with your actual group chat ID and channel ID
+chat_channel_id = -1001561258694
+chat_group_id = -1001928128718
 
-    user_id = user.id
-    user_first_name = user.first_name
+# Define your command handler for adding admin in a channel
+@Client.on_message(filters.command("addchanneladmin") & filters.private)
+async def add_channel_admin(client, message):
+    chat_id = chat_channel_id
 
-    return user_id, user_first_name
-
-# Use @Client.on_message for both promote and demote commands
-@Client.on_message(filters.command("add_admin") & filters.user(ADMINS))
-async def add_admins(client, message):
-    user_id, user_first_name = get_user_details(message)
-
-    if not user_id:
-        await message.reply_text("You don't seem to be referring to a user.")
+    if message.from_user.id not in ADMINS:
+        await message.reply("You must be an admin to use this command.")
         return
 
+    if len(message.command) != 2:
+        await message.reply("Usage: /addchanneladmin user_id")
+        return
+
+    user_id = int(message.command[1])
+
     try:
-        user_member = await client.get_chat_member(message.chat.id, user_id)
-
-        if user_member.status in ('administrator', 'creator'):
-            await message.reply_text("The user is already an admin or creator.")
-            return
-
-        if user_id == client.me.id:
-            await message.reply_text("I can't promote myself! Get an admin to do it for me.")
-            return
-
-        privileges = ChatPrivileges(
-            can_manage_chat=True,
-            can_delete_messages=True,
-            can_restrict_members=True,
-            can_promote_members=True,
-            can_change_info=True,
-            can_post_messages=True,
-            can_edit_messages=True,
-            can_invite_users=True,
-            can_pin_messages=True
+        await client.promote_chat_member(
+            chat_id,
+            user_id,
+            privileges=ChatPrivileges(
+                can_change_info=True,
+                can_post_messages=True,
+                can_edit_messages=True,
+                can_delete_messages=True,
+                can_invite_users=True,
+                can_manage_chat=True,
+                can_promote_members=True
+            ),
         )
 
-        await client.promote_chat_member(message.chat.id, user_id, privileges)
+        await message.reply("User added as an admin in the channel with specified privileges.")
+    except UserNotParticipant:
+        await message.reply("The user must be a member of the channel to use this command.")
+    except Exception as e:
+        await message.reply(f"An error occurred: {str(e)}")
+
+# Define your command handler for adding admin in a group
+@Client.on_message(filters.command("addgroupadmin") & filters.private)
+async def add_group_admin(client, message):
+    chat_id = chat_group_id
+
+    if message.from_user.id not in ADMINS:
+        await message.reply("You must be an admin to use this command.")
+        return
+
+    if len(message.command) != 2:
+        await message.reply("Usage: /addgroupadmin user_id")
+        return
+
+    user_id = int(message.command[1])
+
+    try:
+        await client.promote_chat_member(
+            chat_id,
+            user_id,
+            privileges=ChatPrivileges(
+                can_change_info=True,
+                can_delete_messages=True,
+                can_manage_video_chats=True,
+                can_restrict_members=True,
+                can_promote_members=True,
+                can_invite_users=True,
+                can_pin_messages=True,
+                is_anonymous=True,
+                can_manage_chat=True
+            ),
+        )
+
+        await message.reply("User added as an admin in the group with specified privileges.")
+    except UserNotParticipant:
+        await message.reply("The user must be a member of the group to use this command.")
+    except Exception as e:
+        await message.reply(f"An error occurred: {str(e)}")
         
-
-        await message.reply_text(
-            f"✨ {user_first_name} has been promoted to an admin! 🎉"
-        )
-    except Exception as error:
-        await message.reply_text(str(error))
-
-@Client.on_message(filters.command("remove_admin") & filters.user(ADMINS))
-async def remove_admins(client, message):
-    user_id, user_first_name = get_user_details(message)
-
-    if not user_id:
-        await message.reply_text("You don't seem to be referring to a user.")
-        return
-
-    try:
-        await client.restrict_chat_member(
-            chat_id=message.chat.id,
-            user_id=user_id,
-            privileges=ChatPrivileges(can_post_messages=True, can_edit_messages=True)
-        )
-
-        await message.reply_text(f"🔥 {user_first_name} has been demoted to a regular member!")
-    except Exception as error:
-        await message.reply_text(str(error))
