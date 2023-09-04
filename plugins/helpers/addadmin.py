@@ -4,7 +4,7 @@ from pyrogram.types import ChatPrivileges
 from info import ADMINS
 
 # Define a list of channel IDs and group IDs
-chat_channel_ids = [-1001941233210, -1001814276143] # Replace with your actual channel IDs
+chat_channel_ids = [-1001941233210, -1001814276143, -1001908555438, -1001581020988, -1001845073531] # Replace with your actual channel IDs
 chat_group_ids = [-1001649079321] # Replace with your actual group IDs
 
 
