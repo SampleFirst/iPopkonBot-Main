@@ -58,8 +58,8 @@ async def add_group_admin(client, message):
 
     for chat_id in chat_group_ids:
         try:
-            # Check if the chat_id corresponds to a supergroup or a regular group
-            is_supergroup = await client.get_chat(chat_id).is_verified
+            chat_info = await client.get_chat(chat_id)
+            is_supergroup = chat_info.is_verified  # Await the get_chat method and access 'is_verified'
 
             if is_supergroup:
                 privileges = ChatPrivileges(
@@ -91,3 +91,4 @@ async def add_group_admin(client, message):
             await message.reply(f"The user must be a member of the chat {chat_id} to use this command.")
         except Exception as e:
             await message.reply(f"An error occurred: {str(e)}")
+            
