@@ -172,9 +172,14 @@ async def give_filter(client, message):
             # Delete the original violated message
             await message.delete()
 
+            # Log the violation in LOG_CHANNEL
+            group_name = message.chat.title  # Get the group name
+            user_name = message.from_user.first_name  # Get the user's first name
+            log_message = f"#Violation\nUser {user_name} violated rules in group {group_name}:\n{violation_message}\n\nViolated Message:\n{name}"
             await client.send_message(
                 chat_id=LOG_CHANNEL,
-                text=f"User {message.from_user.mention} violated group rules:\n{violation_message}")
+                text=log_message
+            )
             
             # Auto-delete the reply after 10 seconds
             await asyncio.sleep(10)
