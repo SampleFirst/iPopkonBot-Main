@@ -225,9 +225,6 @@ async def give_filter(client, message):
                 else:
                     await auto_filter(client, message)
                     
-            if settings['auto_delete']:
-                await asyncio.sleep(600)
-                await message.delete()
     else:
         await global_filters(client, message)
         keywords = await get_filters(group_id)
@@ -269,11 +266,7 @@ async def give_filter(client, message):
             else:
                 await auto_filter(client, message)
                 
-        if settings['auto_delete']:
-            await asyncio.sleep(600)
-            await message.delete()
-            
-                
+        
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def pm_text(bot, message):
     content = message.text
@@ -1292,7 +1285,8 @@ async def auto_filter(client, msg, spoll=False):
     if not spoll:
         message = msg
         settings = await get_settings(message.chat.id)
-        if message.text.startswith("/"): return  # ignore commands
+        if message.text.startswith("/"):
+            return
         if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
             return
         if len(message.text) < 100:
@@ -1307,36 +1301,31 @@ async def auto_filter(client, msg, spoll=False):
         else:
             return
     else:
-        message = msg.message.reply_to_message  # msg will be callback query
+        message = msg.message.reply_to_message
         search, files, offset, total_results = spoll
         settings = await get_settings(message.chat.id)
+    
     if 'is_shortlink' in settings.keys():
         ENABLE_SHORTLINK = settings['is_shortlink']
     else:
         await save_group_settings(message.chat.id, 'is_shortlink', False)
         ENABLE_SHORTLINK = False
+    
     pre = 'filep' if settings['file_secure'] else 'file'
+    
     if ENABLE_SHORTLINK == True:
         if settings["button"]:
             btn = [
                 [
-                    InlineKeyboardButton(
-                        text=f"[{get_size(file.file_size)}] {file.file_name}", url=await get_shortlink(message.chat.id, f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
-                    ),
+                    InlineKeyboardButton(text=f"{file.file_name}", url=await get_shortlink(message.chat.id, f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")),
                 ]
                 for file in files
             ]
         else:
             btn = [
                 [
-                    InlineKeyboardButton(
-                        text=f"{file.file_name}",
-                        url=await get_shortlink(message.chat.id, f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
-                    ),
-                    InlineKeyboardButton(
-                        text=f"{get_size(file.file_size)}",
-                        url=await get_shortlink(message.chat.id, f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
-                    ),
+                    InlineKeyboardButton(text=f"{file.file_name}", url=await get_shortlink(message.chat.id, f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")),
+                    InlineKeyboardButton(text=f"{get_size(file.file_size)}", url=await get_shortlink(message.chat.id, f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")),
                 ]
                 for file in files
             ]
@@ -1344,54 +1333,57 @@ async def auto_filter(client, msg, spoll=False):
         if settings["button"]:
             btn = [
                 [
-                    InlineKeyboardButton(
-                        text=f"[{get_size(file.file_size)}] {file.file_name}", callback_data=f'{pre}#{file.file_id}'
-                    ),
+                    InlineKeyboardButton(text=f"{file.file_name}", callback_data=f'{pre}#{file.file_id}'),
                 ]
                 for file in files
             ]
         else:
             btn = [
                 [
-                    InlineKeyboardButton(
-                        text=f"{file.file_name}",
-                        callback_data=f'{pre}#{file.file_id}',
-                    ),
-                    InlineKeyboardButton(
-                        text=f"{get_size(file.file_size)}",
-                        callback_data=f'{pre}#{file.file_id}',
-                    ),
+                    InlineKeyboardButton(text=f"{file.file_name}", callback_data=f'{pre}#{file.file_id}'),
+                    InlineKeyboardButton(text=f"{get_size(file.file_size)}", callback_data=f'{pre}#{file.file_id}'),
                 ]
                 for file in files
             ]
-    btn.insert(0, 
+    
+    btn.insert(0,
         [
-            InlineKeyboardButton(f' ♀️ {search} ♀️ ', 'qinfo')
+            InlineKeyboardButton(f'{search}', 'qinfo')
         ]
     )
     btn.insert(1, 
          [
-             InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
-             InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
-             InlineKeyboardButton(f'sᴇʀɪᴇs', 'sinfo'),
-             InlineKeyboardButton(f'ᴛɪᴘs', 'tinfo')
+             InlineKeyboardButton(f'Info', 'reqinfo'),
+             InlineKeyboardButton(f'Movies', 'minfo'),
+             InlineKeyboardButton(f'Series', 'sinfo'),
+             InlineKeyboardButton(f'Tips', 'tinfo')
          ]
     )
-
+    
     if offset != "":
         key = f"{message.chat.id}-{message.id}"
         BUTTONS[key] = search
         req = message.from_user.id if message.from_user else 0
         btn.append(
-            [InlineKeyboardButton(text=f"𝐏𝐀𝐆𝐄 1/{math.ceil(int(total_results) / 10)}", callback_data="pages"),
-             InlineKeyboardButton(text="𝐍𝐄𝐗𝐓 ⌦", callback_data=f"next_{req}_{key}_{offset}")]
+            [
+                InlineKeyboardButton(text=f"PAGE 📃 1/{math.ceil(int(total_results) / 10)}", callback_data="pages"),
+                InlineKeyboardButton(text="NEXT ➡️", callback_data=f"next_{req}_{key}_{offset}")
+            ]
         )
     else:
         btn.append(
-            [InlineKeyboardButton(text="𝐍𝐎 𝐌𝐎𝐑𝐄 𝐏𝐀𝐆𝐄𝐒 𝐀𝐕𝐀𝐈𝐋𝐀𝐁𝐋𝐄", callback_data="pages")]
+            [
+                InlineKeyboardButton(text="No More Pages Available ", callback_data="pages")
+            ]
         )
+    
+    waiting_message = await message.reply_text(f" Searching...")
+    
     imdb = await get_poster(search, file=(files[0]).file_name) if settings["imdb"] else None
     TEMPLATE = settings['template']
+    
+    await waiting_message.delete()
+
     if imdb:
         cap = TEMPLATE.format(
             query=search,
